@@ -480,8 +480,8 @@ function renderProductos(rows) {
     `).join('');
   }
 
-  // Merma filas 52-67 (índice 51-66)
-  const merma = rows.slice(51, 67)
+  // Merma filas 56-67 (índice 55-66)
+  const merma = rows.slice(55, 67)
     .filter(r => r[0] && !r[0].includes('MERMA') && !r[0].includes('Producto'))
     .map(r => ({ nombre: r[0]||'', cantidad: pNum(r[1]) }))
     .filter(m => m.nombre && m.cantidad > 0);
