@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bodegón Nuñez — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #111113;
+    --surface: #18181b;
+    --surface2: #222226;
+    --border: #2e2e33;
+    --accent: #d4a85a;
+    --red: #e05252;
+    --green: #4db87a;
+    --blue: #5b9bd5;
+    --text: #f2efe9;
+    --muted: #7a7a85;
+    --font-d: 'Bebas Neue', sans-serif;
+    --font-b: 'DM Sans', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-b); }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    min-height: 60px;
+  }
+  .header-left { display:flex; align-items:center; gap:32px; }
+  .logo-text { font-family:var(--font-d); font-size:22px; letter-spacing:3px; }
+  
+  /* TABS */
+  .tabs { display:flex; align-items:stretch; gap:0; }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-family: var(--font-b);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* SUBHEADER */
+  .subheader {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .month-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .month-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-b);
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+  }
+  .refresh-btn {
+    background: var(--accent);
+    border: none;
+    color: #000;
+    font-family: var(--font-b);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .last-update { margin-left:auto; font-size:11px; color:var(--muted); }
+
+  /* HEADER RIGHT */
+  .header-right { display:flex; align-items:center; }
+
+  /* MAIN */
+  .main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* KPI */
+  .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::after { content:''; position:absolute; bottom:0;left:0;right:0;height:2px; background:linear-gradient(90deg,var(--accent),transparent); }
+  .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .kpi-value { font-family:var(--font-d); font-size:34px; letter-spacing:1px; line-height:1; }
+  .kpi-sub { font-size:11px; color:var(--muted); margin-top:5px; }
+
+  /* GRID */
+  .g2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px; }
+
+  /* CARD */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:22px; }
+  .card-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:6px; }
+  .card-title span { color:var(--accent); }
+
+  /* BARS */
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .bar-row:last-child { margin-bottom:0; }
+  .bar-label { font-size:13px; width:120px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-label.cap { text-transform:capitalize; }
+  .bar-track { flex:1; height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; transition:width 1s cubic-bezier(.4,0,.2,1); }
+  .bar-fill.a { background:var(--accent); }
+  .bar-fill.b { background:var(--blue); }
+  .bar-fill.g { background:var(--green); }
+  .bar-val { font-family:var(--font-d); font-size:15px; width:110px; text-align:right; flex-shrink:0; }
+  .bar-sub { font-size:11px; color:var(--muted); }
+
+  /* SEMANAS */
+  .sem-row { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .sem-row:last-child { border-bottom:none; }
+  .sem-label { font-size:12px; color:var(--muted); width:65px; flex-shrink:0; }
+  .sem-wrap { flex:1; }
+  .sem-track { height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+  .sem-fill { height:100%; background:var(--accent); border-radius:3px; transition:width 1s ease; }
+  .sem-cubs { font-size:11px; color:var(--muted); margin-top:3px; }
+  .sem-val { font-family:var(--font-d); font-size:17px; width:120px; text-align:right; flex-shrink:0; }
+
+  /* TABLE */
+  .dt { width:100%; border-collapse:collapse; font-size:13px; }
+  .dt th { text-align:left; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:1px; padding:7px 10px; border-bottom:1px solid var(--border); font-weight:500; }
+  .dt td { padding:10px 10px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .dt tr:last-child td { border-bottom:none; }
+  .dt tr:hover td { background:rgba(255,255,255,0.015); }
+  .dt td.r { text-align:right; }
+  .dt td.ac { color:var(--accent); }
+
+  /* RANK */
+  .rn { font-family:var(--font-d); font-size:18px; color:var(--muted); }
+  .rn.g1 { color:#ffd700; }
+  .rn.g2 { color:#c0c0c0; }
+  .rn.g3 { color:#cd7f32; }
+
+  /* SECTION DIV */
+  .sdiv { display:flex; align-items:center; gap:14px; margin:28px 0 18px; }
+  .sdiv-t { font-family:var(--font-d); font-size:20px; letter-spacing:3px; color:var(--accent); white-space:nowrap; }
+  .sdiv-l { flex:1; height:1px; background:var(--border); }
+
+  /* STOCK */
+  .stock-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px; }
+  .stock-item:last-child { border-bottom:none; }
+  .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .dot.ok { background:var(--green); }
+  .dot.low { background:var(--red); box-shadow:0 0 5px var(--red); animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+  .stock-name { flex:1; }
+  .stock-val { color:var(--muted); }
+
+  /* LOADING / EMPTY */
+  .loading { display:flex; align-items:center; justify-content:center; height:100px; color:var(--muted); font-size:13px; gap:8px; }
+  .spinner { width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .empty { text-align:center; color:var(--muted); font-size:13px; padding:32px; }
+
+  @media(max-width:900px) {
+    .kpi-grid { grid-template-columns:repeat(2,1fr); }
+    .g2,.g3 { grid-template-columns:1fr; }
+    .main { padding:16px; }
+    .header { padding:0 16px; }
+    .subheader { padding:10px 16px; flex-wrap:wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo-text">BODEGÓN NUÑEZ</div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('ops',this)">📊 Operaciones</button>
+      <button class="tab-btn" onclick="switchTab('prov',this)">📦 Proveedores</button>
+      <button class="tab-btn" onclick="switchTab('stock',this)">🏪 Stock</button>
+    </div>
+  </div>
+</header>
+
+<div class="subheader">
+  <span class="month-label">Período</span>
+  <select class="month-select" id="monthSelect" onchange="loadOps()">
+    <option value="MARZO_2026">Marzo 2026</option>
+    <option value="ABRIL_2026">Abril 2026</option>
+    <option value="MAYO_2026">Mayo 2026</option>
+    <option value="JUNIO_2026">Junio 2026</option>
+    <option value="JULIO_2026">Julio 2026</option>
+    <option value="AGOSTO_2026">Agosto 2026</option>
+    <option value="SEPTIEMBRE_2026">Septiembre 2026</option>
+    <option value="OCTUBRE_2026">Octubre 2026</option>
+    <option value="NOVIEMBRE_2026">Noviembre 2026</option>
+    <option value="DICIEMBRE_2026">Diciembre 2026</option>
+  </select>
+  <button class="refresh-btn" onclick="reloadCurrent()">↻ Actualizar</button>
+  <span class="last-update" id="lastUpdate">—</span>
+</div>
+
+<main class="main">
+
+  <!-- ══ OPERACIONES ══ -->
+  <div class="tab-content active" id="tab-ops">
+
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="card-title"><span>▸</span> Facturación Semanal</div>
+        <div id="semanasContainer"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>▸</span> Canales de Delivery</div>
+        <div id="canalesContainer"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <div class="sdiv"><div class="sdiv-t">RANKING DE MOZOS</div><div class="sdiv-l"></div></div>
+    <div class="card" style="margin-bottom:14px">
+      <div id="mozosContainer"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <div class="sdiv"><div class="sdiv-t">PRODUCTOS & MERMA</div><div class="sdiv-l"></div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title"><span>▸</span> Más vendidos</div>
+        <div id="productosContainer"><div class="empty">Sin datos</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>▸</span> Merma</div>
+        <div id="mermaContainer"><div class="empty">Sin datos</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ PROVEEDORES ══ -->
+  <div class="tab-content" id="tab-prov">
+
+    <div class="kpi-grid" style="margin-bottom:24px">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Gastado</div>
+        <div class="kpi-value" id="provTotal" style="font-size:26px">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Facturas Cargadas</div>
+        <div class="kpi-value" id="provCount">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Proveedor Principal</div>
+        <div class="kpi-value" id="provTop" style="font-size:20px">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Prom x Factura</div>
+        <div class="kpi-value" id="provProm" style="font-size:26px">—</div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="card-title"><span>▸</span> Gastos por Proveedor</div>
+        <div id="gastosContainer"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>▸</span> Últimas Facturas</div>
+        <div id="facturasContainer"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ STOCK ══ -->
+  <div class="tab-content" id="tab-stock">
+
+    <div class="sdiv"><div class="sdiv-t">PRODUCTOS ELABORADOS</div><div class="sdiv-l"></div></div>
+    <div class="g3" id="stockCarnes" style="margin-bottom:14px">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
+    </div>
+
+    <div class="sdiv"><div class="sdiv-t">DEPÓSITO / SECOS</div><div class="sdiv-l"></div></div>
+    <div class="g3" id="stockGrid">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+const SHEETS_MESES = {
+  'MARZO_2026':      '14PzPy45Aru0mBarjvLE17EXowh1pDPKF',
+  'ABRIL_2026':      '1YUgsMXrwM0iFm7BZ44Z60QCWvcu1qKIY',
+  'MAYO_2026':       '1t45HGlmsFezvoKz9keWu7jd3eavhvjFD',
+  'JUNIO_2026':      '1mTZqq2hdjY0rN6i0U4a2gnaTPXBZyr_z',
+  'JULIO_2026':      '1beNy6MM41r0WiwgyKJJUtOG8T24AjV-p',
+  'AGOSTO_2026':     '1M4WtB-61iWBGVtwRIgOENnQysSDbSh3S',
+  'SEPTIEMBRE_2026': '1A_ux7SDBo1SBC35I2AUtVev8CNpuS1JU',
+  'OCTUBRE_2026':    '162mPQU6HWZmyWe00r5IJBxSvDd5bZf6I',
+  'NOVIEMBRE_2026':  '10QtN4qQZAIshVWJ1A8npgx4Hk7sfI5dt',
+  'DICIEMBRE_2026':  '1wjnxPY4COezoeP2ymNGjj7XHedy9gRLW',
+};
+function getSheetOps() { return SHEETS_MESES[document.getElementById('monthSelect').value] || SHEETS_MESES['MARZO_2026']; }
+const SHEET_PROV = '1Ux55KL03zQp2m8UvSMW-x14kYX4FMyWUuIDKBrVyLus';
+const API_KEY = 'TU_GOOGLE_API_KEY';
+
+let currentTab = 'ops';
+
+function fmt(n) {
+  const num = parseFloat(String(n||0).replace(/[$.\s]/g,'').replace(',','.')) || 0;
+  if (!num) return '—';
+  return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(num);
+}
+function fmtN(n) {
+  return new Intl.NumberFormat('es-AR').format(parseFloat(String(n||0).replace(/\./g,'').replace(',','.')) || 0);
+}
+function pNum(s) {
+  return parseFloat(String(s||0).replace(/[$.\s]/g,'').replace(',','.')) || 0;
+}
+
+async function fetchSheet(id, range) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Error');
+  return (await res.json()).values || [];
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  currentTab = tab;
+  if (tab === 'prov') loadProv();
+  if (tab === 'stock') loadStock();
+}
+
+function reloadCurrent() {
+  if (currentTab === 'ops') loadOps();
+  if (currentTab === 'prov') loadProv();
+  if (currentTab === 'stock') loadStock();
+}
+
+// ── OPERACIONES ──
+async function loadOps() {
+  document.getElementById('lastUpdate').textContent = 'Actualizando...';
+  const sheet = document.getElementById('monthSelect').value;
+  try {
+    const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H60`);
+    renderKPIs(rows);
+    renderSemanas(rows);
+    renderCanales(rows);
+    renderMozos(rows);
+  } catch(e) {
+    renderEjemplo();
+  }
+  document.getElementById('lastUpdate').textContent = `${new Date().toLocaleTimeString('es-AR')}`;
+}
+
+function renderKPIs(rows) {
+  const fact = pNum(rows[5]?.[0]);
+  const cubs = pNum(rows[5]?.[2]);
+  const prom = pNum(rows[5]?.[4]);
+  const vs = rows[5]?.[6] || '—';
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">💰 Facturación Total</div><div class="kpi-value">${fact>0?fmt(fact):'—'}</div><div class="kpi-sub">en el mes</div></div>
+    <div class="kpi-card"><div class="kpi-label">👥 Cubiertos Totales</div><div class="kpi-value">${cubs>0?fmtN(cubs):'—'}</div><div class="kpi-sub">en el mes</div></div>
+    <div class="kpi-card"><div class="kpi-label">📊 Promedio x Cubierto</div><div class="kpi-value">${prom>0?fmt(prom):'—'}</div><div class="kpi-sub">por cubierto</div></div>
+    <div class="kpi-card"><div class="kpi-label">📈 VS Mes Anterior</div><div class="kpi-value">${vs}</div><div class="kpi-sub">variación</div></div>
+  `;
+}
+
+function renderSemanas(rows) {
+  const sems = rows.slice(10,14).map(r=>({label:r[0]||'',fact:pNum(r[1]),cubs:pNum(r[2])})).filter(s=>s.label);
+  const max = Math.max(...sems.map(s=>s.fact),1);
+  document.getElementById('semanasContainer').innerHTML = sems.map(s=>`
+    <div class="sem-row">
+      <div class="sem-label">${s.label}</div>
+      <div class="sem-wrap">
+        <div class="sem-track"><div class="sem-fill" style="width:${s.fact/max*100}%"></div></div>
+        <div class="sem-cubs">${s.cubs>0?fmtN(s.cubs)+' cubiertos':'sin datos'}</div>
+      </div>
+      <div class="sem-val">${s.fact>0?fmt(s.fact):'—'}</div>
+    </div>
+  `).join('');
+}
+
+function renderCanales(rows) {
+  const canales = rows.slice(33,37).map(r=>({nombre:r[0]||'',total:pNum(r[3])})).filter(c=>c.nombre);
+  const max = Math.max(...canales.map(c=>c.total),1);
+  const colors = ['a','b','g','a'];
+  document.getElementById('canalesContainer').innerHTML = canales.map((c,i)=>`
+    <div class="bar-row">
+      <div class="bar-label">${c.nombre}</div>
+      <div class="bar-track"><div class="bar-fill ${colors[i]}" style="width:${c.total/max*100}%"></div></div>
+      <div class="bar-val">${c.total>0?fmt(c.total):'—'}</div>
+    </div>
+  `).join('');
+}
+
+function renderMozos(rows) {
+  const mozos = rows.slice(18,29)
+    .filter(r=>r[5]&&!r[5].includes('ERROR')&&r[5]!=='Mozo')
+    .map(r=>({nombre:r[5]||'',total:pNum(r[6]),cubs:pNum(r[7])}))
+    .filter(m=>m.nombre&&m.total>0)
+    .sort((a,b)=>b.total-a.total);
+  if (!mozos.length){document.getElementById('mozosContainer').innerHTML='<div class="empty">Sin datos</div>';return;}
+  const max=mozos[0].total;
+  const rks=['g1','g2','g3'];
+  document.getElementById('mozosContainer').innerHTML=mozos.map((m,i)=>`
+    <div class="bar-row" style="margin-bottom:16px">
+      <div style="width:26px;flex-shrink:0"><span class="rn ${rks[i]||''}">${i+1}</span></div>
+      <div style="width:110px;flex-shrink:0">
+        <div class="bar-label cap">${m.nombre.toLowerCase()}</div>
+        <div class="bar-sub">${m.cubs>0?fmtN(m.cubs)+' cub.':''}</div>
+      </div>
+      <div class="bar-track" style="height:9px"><div class="bar-fill a" style="width:${m.total/max*100}%"></div></div>
+      <div class="bar-val">${fmt(m.total)}</div>
+    </div>
+  `).join('');
+}
+
+// ── PROVEEDORES ──
+async function loadProv() {
+  document.getElementById('lastUpdate').textContent = 'Actualizando...';
+  try {
+    const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:H500');
+    const facturas = rows.filter(r=>r[0]&&r[1]);
+    const porProv = {};
+    facturas.forEach(r=>{
+      const prov=r[1]||'';
+      const match=(r[7]||'').match(/\$([0-9.,]+)/);
+      const total=match?pNum(match[1]):0;
+      if(!porProv[prov])porProv[prov]={total:0,count:0};
+      porProv[prov].total+=total;
+      porProv[prov].count++;
+    });
+    const list=Object.entries(porProv).sort((a,b)=>b[1].total-a[1].total);
+    const totalG=list.reduce((s,[,v])=>s+v.total,0);
+    document.getElementById('provTotal').textContent=totalG>0?fmt(totalG):fmtN(facturas.length);
+    document.getElementById('provCount').textContent=facturas.length;
+    document.getElementById('provTop').textContent=(list[0]?.[0]||'—').split(' ')[0];
+    document.getElementById('provProm').textContent=facturas.length>0&&totalG>0?fmt(totalG/facturas.length):'—';
+    const maxP=list[0]?.[1].total||1;
+    document.getElementById('gastosContainer').innerHTML=list.length>0?list.map(([prov,data])=>`
+      <div class="bar-row">
+        <div class="bar-label">${prov.split(' ')[0]}</div>
+        <div class="bar-track"><div class="bar-fill a" style="width:${data.total/maxP*100}%"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${data.total>0?fmt(data.total):data.count+' items'}</div>
+      </div>
+    `).join(''):'<div class="empty">Sin facturas</div>';
+    const ultimas=[...facturas].reverse().slice(0,10);
+    document.getElementById('facturasContainer').innerHTML=`
+      <table class="dt">
+        <thead><tr><th>Fecha</th><th>Proveedor</th><th>Producto</th><th style="text-align:right">Estado</th></tr></thead>
+        <tbody>${ultimas.map(r=>`
+          <tr>
+            <td style="color:var(--muted);font-size:11px">${r[0]||''}</td>
+            <td>${(r[1]||'').split(' ')[0]}</td>
+            <td style="color:var(--muted);font-size:11px">${(r[2]||'').substring(0,22)}</td>
+            <td class="r"><span style="color:var(--green);font-size:11px">${r[6]||''}</span></td>
+          </tr>
+        `).join('')}</tbody>
+      </table>
+    `;
+  } catch(e) {
+    document.getElementById('gastosContainer').innerHTML='<div class="empty">Configurar API key de Google</div>';
+    document.getElementById('facturasContainer').innerHTML='<div class="empty">Configurar API key de Google</div>';
+  }
+  document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
+}
+
+// ── STOCK ──
+async function loadStock() {
+  document.getElementById('lastUpdate').textContent='Actualizando...';
+
+  // Carnes — leer de pestaña semanal
+  try {
+    const sheet = document.getElementById('monthSelect').value;
+    // Mapeo pestaña semanal según mes seleccionado
+    const semSheet = 'SEMANA 1';
+    const rows = await fetchSheet(getSheetOps(), `${semSheet}!A1:N15`);
+
+    // Productos elaborados con stock del resumen (col J=producto, K=venta, L=ingreso, M=merma)
+    const productos = [];
+    for (let i=1; i<rows.length; i++) {
+      const r = rows[i];
+      if (r[9] && r[10] !== undefined) {
+        productos.push({
+          nombre: r[9] || '',
+          venta: parseFloat(r[10])||0,
+          ingreso: parseFloat(r[11])||0,
+          merma: parseFloat(r[12])||0,
+        });
+      }
+    }
+
+    // Stock diario — leer filas de cada producto (STOCK row = fila 3,11,19,27,34,41,48,55,63,70,77)
+    const stockRows = await fetchSheet(getSheetOps(), `${semSheet}!A1:H85`);
+    const productoStock = {};
+    const productoNames = ['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    
+    productoNames.forEach(nombre => {
+      for (let i=0; i<stockRows.length; i++) {
+        if (stockRows[i][0] === nombre) {
+          // Siguiente fila es STOCK
+          const stockRow = stockRows[i+1];
+          if (stockRow && stockRow[0] === 'STOCK') {
+            // Tomar el último valor no vacío
+            const vals = stockRow.slice(1,8).filter(v => v !== '' && v !== undefined);
+            productoStock[nombre] = parseFloat(vals[vals.length-1]) || 0;
+          }
+          break;
+        }
+      }
+    });
+
+    // Renderizar por categorías
+    const carnes = ['OJO','LOMO','BONDIOLA','MATAMBRE'];
+    const milanesas = ['MILA CARTA','MILA MENU','SUPREMA'];
+    const otros = ['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+
+    const renderGrupo = (titulo, lista) => `
+      <div class="card">
+        <div class="card-title"><span>▸</span> ${titulo}</div>
+        ${lista.map(p => {
+          const stock = productoStock[p] || 0;
+          const low = stock < 10;
+          return `<div class="stock-item">
+            <div class="dot ${low?'low':'ok'}"></div>
+            <div class="stock-name">${p}</div>
+            <div class="stock-val">${stock} u</div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+
+    document.getElementById('stockCarnes').innerHTML =
+      renderGrupo('Carnes', carnes) +
+      renderGrupo('Milanesas', milanesas) +
+      renderGrupo('Otros', otros);
+
+  } catch(e) {
+    renderStockEjemplo();
+  }
+
+  // Secos/almacén — leer de proveedores
+  try {
+    const rows=await fetchSheet(SHEET_PROV,'Stock!A3:G300');
+    const items=rows.filter(r=>r[0]);
+    const cats={};
+    items.forEach(r=>{
+      const prov=r[1]||'Otros';
+      if(!cats[prov])cats[prov]=[];
+      cats[prov].push({producto:r[0],unidad:r[2]||'',actual:parseFloat(r[3])||0,minimo:parseFloat(r[4])||0});
+    });
+    document.getElementById('stockGrid').innerHTML=Object.entries(cats).map(([prov,items])=>`
+      <div class="card">
+        <div class="card-title"><span>▸</span> ${prov.split(' ')[0]}</div>
+        ${items.map(item=>`
+          <div class="stock-item">
+            <div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div>
+            <div class="stock-name">${item.producto}</div>
+            <div class="stock-val">${item.actual} ${item.unidad}</div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+  } catch(e) {
+    renderStockEjemplo();
+  }
+
+  document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
+}
+
+// ── EJEMPLO SIN API KEY ──
+function renderEjemplo() {
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi-card"><div class="kpi-label">💰 Facturación Total</div><div class="kpi-value">$59,5M</div><div class="kpi-sub">Marzo 2026</div></div>
+    <div class="kpi-card"><div class="kpi-label">👥 Cubiertos Totales</div><div class="kpi-value">1.864</div><div class="kpi-sub">en el mes</div></div>
+    <div class="kpi-card"><div class="kpi-label">📊 Promedio x Cubierto</div><div class="kpi-value">$26.3K</div><div class="kpi-sub">por cubierto</div></div>
+    <div class="kpi-card"><div class="kpi-label">📈 VS Febrero</div><div class="kpi-value">—</div></div>
+  `;
+  const sems=[{label:'Sem 2-8',fact:59523018,cubs:1864},{label:'Sem 9-15',fact:0,cubs:0},{label:'Sem 16-22',fact:0,cubs:0},{label:'Sem 23-29',fact:0,cubs:0}];
+  const maxS=59523018;
+  document.getElementById('semanasContainer').innerHTML=sems.map(s=>`
+    <div class="sem-row">
+      <div class="sem-label">${s.label}</div>
+      <div class="sem-wrap"><div class="sem-track"><div class="sem-fill" style="width:${s.fact/maxS*100}%"></div></div><div class="sem-cubs">${s.cubs>0?fmtN(s.cubs)+' cubiertos':'sin datos'}</div></div>
+      <div class="sem-val">${s.fact>0?fmt(s.fact):'—'}</div>
+    </div>
+  `).join('');
+  const cans=[{nombre:'🛵 Rappi',total:5131600},{nombre:'🛵 Pedidos Ya!',total:2973300},{nombre:'🧾 Mozo Mostrador',total:2049801},{nombre:'📱 MP Delivery',total:148700}];
+  const maxC=5131600;const colC=['a','b','g','a'];
+  document.getElementById('canalesContainer').innerHTML=cans.map((c,i)=>`
+    <div class="bar-row"><div class="bar-label">${c.nombre}</div><div class="bar-track"><div class="bar-fill ${colC[i]}" style="width:${c.total/maxC*100}%"></div></div><div class="bar-val">${fmt(c.total)}</div></div>
+  `).join('');
+  const mozos=[{nombre:'Nicolás',total:6933204,cubs:239},{nombre:'Nora',total:6204410,cubs:196},{nombre:'Martín',total:6119322,cubs:195},{nombre:'Juan',total:5400918,cubs:227},{nombre:'Adrián',total:5617026,cubs:252},{nombre:'Sofía',total:5159233,cubs:217},{nombre:'Silvia',total:5072210,cubs:170},{nombre:'Rodrigo',total:5062416,cubs:175},{nombre:'Luis',total:3650879,cubs:182}].sort((a,b)=>b.total-a.total);
+  const maxM=mozos[0].total;const rks=['g1','g2','g3'];
+  document.getElementById('mozosContainer').innerHTML=mozos.map((m,i)=>`
+    <div class="bar-row" style="margin-bottom:16px">
+      <div style="width:26px;flex-shrink:0"><span class="rn ${rks[i]||''}">${i+1}</span></div>
+      <div style="width:110px;flex-shrink:0"><div class="bar-label">${m.nombre}</div><div class="bar-sub">${fmtN(m.cubs)} cub.</div></div>
+      <div class="bar-track" style="height:9px"><div class="bar-fill a" style="width:${m.total/maxM*100}%"></div></div>
+      <div class="bar-val">${fmt(m.total)}</div>
+    </div>
+  `).join('');
+
+  // Stock carnes ejemplo
+  const stockCarnes = {
+    'Carnes': [{n:'Ojo de bife',s:44,l:false},{n:'Lomo',s:18,l:false},{n:'Bondiola',s:96,l:false},{n:'Matambre',s:12,l:false}],
+    'Milanesas': [{n:'Mila Carta',s:149,l:false},{n:'Mila Menú',s:50,l:false},{n:'Suprema',s:33,l:false}],
+    'Otros': [{n:'Salmón',s:5,l:true},{n:'Churrasquito cerdo',s:10,l:false},{n:'Empanadas carne',s:14,l:true},{n:'Empanadas JyQ',s:93,l:false}],
+  };
+  document.getElementById('stockCarnes').innerHTML = Object.entries(stockCarnes).map(([grupo, items]) => `
+    <div class="card">
+      <div class="card-title"><span>▸</span> ${grupo}</div>
+      ${items.map(item => `
+        <div class="stock-item">
+          <div class="dot ${item.l?'low':'ok'}"></div>
+          <div class="stock-name">${item.n}</div>
+          <div class="stock-val">${item.s} u</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  // Stock secos ejemplo
+  const stockSecos = {
+    'El Emporio': [{p:'Pack azúcar',a:3,m:2},{p:'Latas tomate',a:8,m:10},{p:'Harina',a:2,m:5},{p:'Café en grano',a:3,m:2}],
+    'Molier': [{p:'Mozzarella',a:4,m:3},{p:'Jamón cocido',a:1,m:2},{p:'Panceta',a:3,m:2}],
+    'Lustrol': [{p:'Detergente 5l',a:3,m:2},{p:'Lavandina 5l',a:1,m:2},{p:'Desengrasante',a:2,m:1}],
+    'Papelera Julián': [{p:'Servilletas',a:5,m:3},{p:'Bandejas 103',a:2,m:2},{p:'Bolsas camiseta',a:4,m:2}],
+  };
+  document.getElementById('stockGrid').innerHTML = Object.entries(stockSecos).map(([prov, items]) => `
+    <div class="card">
+      <div class="card-title"><span>▸</span> ${prov}</div>
+      ${items.map(item => `
+        <div class="stock-item">
+          <div class="dot ${item.a<=item.m?'low':'ok'}"></div>
+          <div class="stock-name">${item.p}</div>
+          <div class="stock-val">${item.a}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function renderStockEjemplo() {
+  const stockCarnes = [
+    {n:'Ojo de bife',s:44,l:false},{n:'Lomo',s:18,l:false},{n:'Bondiola',s:96,l:false},{n:'Matambre',s:12,l:false},
+    {n:'Mila Carta',s:149,l:false},{n:'Mila Menú',s:50,l:false},{n:'Suprema',s:33,l:false},
+    {n:'Salmón',s:5,l:true},{n:'Churrasquito cerdo',s:10,l:false},{n:'Empanadas carne',s:14,l:true},{n:'Empanadas JyQ',s:93,l:false},
+  ];
+  document.getElementById('stockCarnes').innerHTML = `
+    <div class="card" style="grid-column:1/-1">
+      <div class="card-title"><span>▸</span> Productos Elaborados</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0 24px">
+        ${stockCarnes.map(i => `<div class="stock-item"><div class="dot ${i.l?'low':'ok'}"></div><div class="stock-name">${i.n}</div><div class="stock-val">${i.s} u</div></div>`).join('')}
+      </div>
+    </div>
+  `;
+  const stockSecos = {
+    'El Emporio': [{p:'Pack azúcar',a:3,m:2},{p:'Latas tomate',a:8,m:10},{p:'Harina',a:2,m:5},{p:'Café en grano',a:3,m:2}],
+    'Molier': [{p:'Mozzarella',a:4,m:3},{p:'Jamón cocido',a:1,m:2},{p:'Panceta',a:3,m:2}],
+    'Lustrol': [{p:'Detergente 5l',a:3,m:2},{p:'Lavandina 5l',a:1,m:2},{p:'Desengrasante',a:2,m:1}],
+    'Papelera Julián': [{p:'Servilletas',a:5,m:3},{p:'Bandejas 103',a:2,m:2},{p:'Bolsas camiseta',a:4,m:2}],
+  };
+  document.getElementById('stockGrid').innerHTML = Object.entries(stockSecos).map(([prov, items]) => `
+    <div class="card">
+      <div class="card-title"><span>▸</span> ${prov}</div>
+      ${items.map(i => `<div class="stock-item"><div class="dot ${i.a<=i.m?'low':'ok'}"></div><div class="stock-name">${i.p}</div><div class="stock-val">${i.a}</div></div>`).join('')}
+    </div>
+  `).join('');
+}
+
+loadOps();
+</script>
+</body>
+</html>
