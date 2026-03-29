@@ -334,16 +334,18 @@ let currentTab = 'ops';
 
 function pNum(s) {
   if (!s && s !== 0) return 0;
+  if (typeof s === 'number') return s;
   let str = String(s).trim().replace(/\s+/g, '').replace(/\$/g, '');
   if (str.includes(',')) {
     str = str.replace(/\./g, '').replace(',', '.');
-  } else {
+  } else if ((str.match(/\./g) || []).length > 1) {
+    // múltiples puntos = separadores de miles
     str = str.replace(/\./g, '');
   }
   return parseFloat(str) || 0;
 }
 function fmt(n) {
-  const num = pNum(n);
+  const num = typeof n === 'number' ? n : pNum(n);
   if (!num) return '—';
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(num);
 }
