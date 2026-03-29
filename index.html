@@ -386,7 +386,7 @@ async function loadOps() {
   document.getElementById('lastUpdate').textContent = 'Actualizando...';
   const sheet = document.getElementById('monthSelect').value;
   try {
-    const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H65`);
+    const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H70`);
     renderKPIs(rows);
     renderSemanas(rows);
     renderCanales(rows);
@@ -480,8 +480,8 @@ function renderProductos(rows) {
     `).join('');
   }
 
-  // Merma filas 52-63 (índice 51-62)
-  const merma = rows.slice(51, 63)
+  // Merma filas 52-67 (índice 51-66)
+  const merma = rows.slice(51, 67)
     .filter(r => r[0] && !r[0].includes('MERMA') && !r[0].includes('Producto'))
     .map(r => ({ nombre: r[0]||'', cantidad: pNum(r[1]) }))
     .filter(m => m.nombre && m.cantidad > 0);
