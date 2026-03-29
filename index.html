@@ -332,16 +332,30 @@ const API_KEY = 'AIzaSyB02rsTd-NzUxHFc41Y5JZ5KeJ3YfpZftU';
 
 let currentTab = 'ops';
 
+function pNum(s) {
+  if (!s && s !== 0) return 0;
+  let str = String(s).trim();
+  // Sacar simbolos de moneda y espacios
+  str = str.replace(/[$\s]/g, '');
+  // Formato argentino: punto=miles, coma=decimal
+  // Ej: "26.328,38" -> 26328.38
+  // Ej: "59.523.018" -> 59523018
+  if (str.includes(',')) {
+    // tiene decimal con coma
+    str = str.replace(/\./g, '').replace(',', '.');
+  } else {
+    // solo puntos como separadores de miles
+    str = str.replace(/\./g, '');
+  }
+  return parseFloat(str) || 0;
+}
 function fmt(n) {
-  const num = parseFloat(String(n||0).replace(/[$.\s]/g,'').replace(',','.')) || 0;
+  const num = pNum(n);
   if (!num) return '—';
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(num);
 }
 function fmtN(n) {
-  return new Intl.NumberFormat('es-AR').format(parseFloat(String(n||0).replace(/\./g,'').replace(',','.')) || 0);
-}
-function pNum(s) {
-  return parseFloat(String(s||0).replace(/[$.\s]/g,'').replace(',','.')) || 0;
+  return new Intl.NumberFormat('es-AR').format(pNum(n));
 }
 
 async function fetchSheet(id, range) {
