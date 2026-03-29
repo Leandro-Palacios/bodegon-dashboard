@@ -386,11 +386,12 @@ async function loadOps() {
   document.getElementById('lastUpdate').textContent = 'Actualizando...';
   const sheet = document.getElementById('monthSelect').value;
   try {
-    const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H60`);
+    const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H65`);
     renderKPIs(rows);
     renderSemanas(rows);
     renderCanales(rows);
     renderMozos(rows);
+    renderProductos(rows);
   } catch(e) {
     renderEjemplo();
   }
@@ -460,7 +461,44 @@ function renderMozos(rows) {
   `).join('');
 }
 
-// ── PROVEEDORES ──
+// ── PRODUCTOS Y MERMA ──
+function renderProductos(rows) {
+  // Productos filas 42-52 (índice 41-51), columnas A=producto, B=unidades, C=ingresos
+  const productos = rows.slice(41, 52)
+    .filter(r => r[0] && r[0] !== 'Producto' && !r[0].includes('VENTA') && !r[0].includes('MERMA'))
+    .map(r => ({ nombre: r[0]||'', unidades: pNum(r[1]), ingresos: pNum(r[2]) }))
+    .filter(p => p.nombre && (p.unidades > 0 || p.ingresos > 0));
+
+  if (productos.length > 0) {
+    const maxU = Math.max(...productos.map(p => p.unidades), 1);
+    document.getElementById('productosContainer').innerHTML = productos.map(p => `
+      <div class="bar-row">
+        <div class="bar-label">${p.nombre.replace(/🥩|🐟/g,'').trim()}</div>
+        <div class="bar-track"><div class="bar-fill a" style="width:${p.unidades/maxU*100}%"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${fmtN(p.unidades)} u</div>
+      </div>
+    `).join('');
+  }
+
+  // Merma filas 52-63 (índice 51-62)
+  const merma = rows.slice(51, 63)
+    .filter(r => r[0] && !r[0].includes('MERMA') && !r[0].includes('Producto'))
+    .map(r => ({ nombre: r[0]||'', cantidad: pNum(r[1]) }))
+    .filter(m => m.nombre && m.cantidad > 0);
+
+  if (merma.length > 0) {
+    const maxM = Math.max(...merma.map(m => m.cantidad), 1);
+    document.getElementById('mermaContainer').innerHTML = merma.map(m => `
+      <div class="bar-row">
+        <div class="bar-label">${m.nombre.replace(/🥩|🐟/g,'').trim()}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${m.cantidad/maxM*100}%;background:var(--red)"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b);color:var(--red)">${fmtN(m.cantidad)} u</div>
+      </div>
+    `).join('');
+  }
+}
+
+
 async function loadProv() {
   document.getElementById('lastUpdate').textContent = 'Actualizando...';
   try {
