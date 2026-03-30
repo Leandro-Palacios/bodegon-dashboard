@@ -500,20 +500,28 @@ async function loadProv() {
     const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:H500');
     const facturas = rows.filter(r=>r[0]&&r[1]);
     const porProv = {};
+    const facturasUnicas = new Set();
     facturas.forEach(r=>{
       const prov=r[1]||'';
+      const fecha=r[0]||'';
       const match=(r[7]||'').match(/\$([0-9.,]+)/);
       const total=match?pNum(match[1]):0;
       if(!porProv[prov])porProv[prov]={total:0,count:0};
       porProv[prov].total+=total;
-      porProv[prov].count++;
+      // Contar facturas únicas por fecha+proveedor
+      const key=`${fecha}_${prov}`;
+      if(!facturasUnicas.has(key)){
+        facturasUnicas.add(key);
+        porProv[prov].count++;
+      }
     });
     const list=Object.entries(porProv).sort((a,b)=>b[1].total-a[1].total);
     const totalG=list.reduce((s,[,v])=>s+v.total,0);
-    document.getElementById('provTotal').textContent=totalG>0?fmt(totalG):fmtN(facturas.length);
-    document.getElementById('provCount').textContent=facturas.length;
+    const totalFacturas=facturasUnicas.size;
+    document.getElementById('provTotal').textContent=totalG>0?fmt(totalG):fmtN(totalFacturas);
+    document.getElementById('provCount').textContent=totalFacturas;
     document.getElementById('provTop').textContent=(list[0]?.[0]||'—').split(' ')[0];
-    document.getElementById('provProm').textContent=facturas.length>0&&totalG>0?fmt(totalG/facturas.length):'—';
+    document.getElementById('provProm').textContent=totalFacturas>0&&totalG>0?fmt(totalG/totalFacturas):'—';
     const maxP=list[0]?.[1].total||1;
     document.getElementById('gastosContainer').innerHTML=list.length>0?list.map(([prov,data])=>`
       <div class="bar-row">
