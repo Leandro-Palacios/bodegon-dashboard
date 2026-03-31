@@ -582,8 +582,8 @@ async function loadStock() {
           // Buscar fila TOTAL (no STOCK) — es el stock al final del día
           for (let j=i+1; j<Math.min(i+8, stockRows.length); j++) {
             if (stockRows[j][0] === 'TOTAL') {
-              const vals = stockRows[j].slice(1,8).filter(v => v !== '' && v !== undefined && !isNaN(parseFloat(v)));
-              productoStock[nombre] = parseFloat(vals[vals.length-1]) || 0;
+              const vals = stockRows[j].slice(1,8).filter(v => v !== '' && v !== undefined && parseFloat(v) > 0);
+              productoStock[nombre] = vals.length > 0 ? parseFloat(vals[vals.length-1]) : 0;
               break;
             }
           }
