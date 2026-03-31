@@ -497,17 +497,17 @@ function renderProductos(rows) {
 async function loadProv() {
   document.getElementById('lastUpdate').textContent = 'Actualizando...';
   try {
-    const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:H500');
+    const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:L500');
     const facturas = rows.filter(r=>r[0]&&r[1]);
     const porProv = {};
     const facturasUnicas = new Set();
     facturas.forEach(r=>{
       const prov=r[1]||'';
       const fecha=r[0]||'';
-      const match=(r[7]||'').match(/\$([0-9.,]+)/);
-      const total=match?pNum(match[1]):0;
+      // Columnas: A=fecha, B=proveedor, C=producto, D=cantidad, E=unidad, F=fecha entrega, G=estado, H=precio unitario, I=subtotal, J=total factura, K=total con iva, L=notas
+      const subtotal = pNum(r[8]||'0'); // columna I = SUBTOTAL
       if(!porProv[prov])porProv[prov]={total:0,count:0};
-      porProv[prov].total+=total;
+      porProv[prov].total+=subtotal;
       // Contar facturas únicas por fecha+proveedor
       const key=`${fecha}_${prov}`;
       if(!facturasUnicas.has(key)){
@@ -533,13 +533,15 @@ async function loadProv() {
     const ultimas=[...facturas].reverse().slice(0,10);
     document.getElementById('facturasContainer').innerHTML=`
       <table class="dt">
-        <thead><tr><th>Fecha</th><th>Proveedor</th><th>Producto</th><th style="text-align:right">Estado</th></tr></thead>
+        <thead><tr><th>Fecha</th><th>Proveedor</th><th>Producto</th><th style="text-align:right">Cant.</th><th style="text-align:right">P.Unit</th><th style="text-align:right">Subtotal</th></tr></thead>
         <tbody>${ultimas.map(r=>`
           <tr>
             <td style="color:var(--muted);font-size:11px">${r[0]||''}</td>
-            <td>${(r[1]||'').split(' ')[0]}</td>
-            <td style="color:var(--muted);font-size:11px">${(r[2]||'').substring(0,22)}</td>
-            <td class="r"><span style="color:var(--green);font-size:11px">${r[6]||''}</span></td>
+            <td style="font-size:12px">${(r[1]||'').split(' ')[0]}</td>
+            <td style="color:var(--muted);font-size:11px">${(r[2]||'').substring(0,20)}</td>
+            <td class="r" style="font-size:11px">${r[3]||''} ${r[4]||''}</td>
+            <td class="r" style="font-size:11px;color:var(--muted)">${r[7]?fmt(pNum(r[7])):'—'}</td>
+            <td class="r" style="font-size:11px;color:var(--accent)">${r[8]?fmt(pNum(r[8])):'—'}</td>
           </tr>
         `).join('')}</tbody>
       </table>
@@ -578,7 +580,7 @@ async function loadStock() {
 
     productoNames.forEach(nombre => {
       for (let i=0; i<stockRows.length; i++) {
-        if (stockRows[i][0] === nombre) {
+        if (stockRows[i][0] && stockRows[i][0].trim() === nombre) {
           // Buscar fila TOTAL (no STOCK) — es el stock al final del día
           for (let j=i+1; j<Math.min(i+8, stockRows.length); j++) {
             if (stockRows[j][0] === 'TOTAL') {
