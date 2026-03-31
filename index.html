@@ -559,15 +559,13 @@ async function loadStock() {
   try {
     // Intentar semanas de 5 a 1 hasta encontrar una con datos
     let stockRows = null;
-    let semFound = '';
     for (let sem = 5; sem >= 1; sem--) {
       try {
         const r = await fetchSheet(getSheetOps(), `SEMANA ${sem}!A1:H85`);
-        // Verificar que tiene datos reales (más de 5 filas con contenido)
-        const conDatos = r.filter(row => row.some(c => c !== '' && c !== undefined));
-        if (conDatos.length > 5) {
+        // Verificar que tiene valores numéricos reales en filas TOTAL
+        const tieneDatos = r.some(row => row[0] === 'TOTAL' && row.slice(1).some(v => parseFloat(v) > 0));
+        if (tieneDatos) {
           stockRows = r;
-          semFound = `SEMANA ${sem}`;
           break;
         }
       } catch(e) { continue; }
