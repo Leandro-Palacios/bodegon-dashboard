@@ -528,12 +528,12 @@ async function loadProv() {
       const totalIva = pNum(r[10]||'0');
 
       if(!porProv[prov])porProv[prov]={total:0,count:0};
-      porProv[prov].total+=subtotal;
 
       const key=`${fecha}_${prov}`;
       if(!facturasUnicas.has(key)){
         facturasUnicas.add(key);
         porProv[prov].count++;
+        porProv[prov].total+=totalFactura; // sumar total de factura, no subtotal por producto
         facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,productos:[]};
       }
       if(facturasAgrupadas[key]){
