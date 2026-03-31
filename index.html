@@ -555,48 +555,45 @@ async function loadProv() {
 async function loadStock() {
   document.getElementById('lastUpdate').textContent='Actualizando...';
 
-  // Carnes — leer de pestaña semanal
+  // Carnes — buscar última semana con datos
   try {
-    const sheet = document.getElementById('monthSelect').value;
-    // Mapeo pestaña semanal según mes seleccionado
-    const semSheet = 'SEMANA 1';
-    const rows = await fetchSheet(getSheetOps(), `${semSheet}!A1:N15`);
-
-    // Productos elaborados con stock del resumen (col J=producto, K=venta, L=ingreso, M=merma)
-    const productos = [];
-    for (let i=1; i<rows.length; i++) {
-      const r = rows[i];
-      if (r[9] && r[10] !== undefined) {
-        productos.push({
-          nombre: r[9] || '',
-          venta: parseFloat(r[10])||0,
-          ingreso: parseFloat(r[11])||0,
-          merma: parseFloat(r[12])||0,
-        });
-      }
+    // Intentar semanas de 5 a 1 hasta encontrar una con datos
+    let stockRows = null;
+    let semFound = '';
+    for (let sem = 5; sem >= 1; sem--) {
+      try {
+        const r = await fetchSheet(getSheetOps(), `SEMANA ${sem}!A1:H85`);
+        // Verificar que tiene datos reales (más de 5 filas con contenido)
+        const conDatos = r.filter(row => row.some(c => c !== '' && c !== undefined));
+        if (conDatos.length > 5) {
+          stockRows = r;
+          semFound = `SEMANA ${sem}`;
+          break;
+        }
+      } catch(e) { continue; }
     }
 
-    // Stock diario — leer filas de cada producto (STOCK row = fila 3,11,19,27,34,41,48,55,63,70,77)
-    const stockRows = await fetchSheet(getSheetOps(), `${semSheet}!A1:H85`);
+    if (!stockRows) throw new Error('Sin datos de semanas');
+
     const productoStock = {};
     const productoNames = ['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
-    
+
     productoNames.forEach(nombre => {
       for (let i=0; i<stockRows.length; i++) {
         if (stockRows[i][0] === nombre) {
-          // Siguiente fila es STOCK
-          const stockRow = stockRows[i+1];
-          if (stockRow && stockRow[0] === 'STOCK') {
-            // Tomar el último valor no vacío
-            const vals = stockRow.slice(1,8).filter(v => v !== '' && v !== undefined);
-            productoStock[nombre] = parseFloat(vals[vals.length-1]) || 0;
+          // Buscar fila TOTAL (no STOCK) — es el stock al final del día
+          for (let j=i+1; j<Math.min(i+8, stockRows.length); j++) {
+            if (stockRows[j][0] === 'TOTAL') {
+              const vals = stockRows[j].slice(1,8).filter(v => v !== '' && v !== undefined && !isNaN(parseFloat(v)));
+              productoStock[nombre] = parseFloat(vals[vals.length-1]) || 0;
+              break;
+            }
           }
           break;
         }
       }
     });
 
-    // Renderizar por categorías
     const carnes = ['OJO','LOMO','BONDIOLA','MATAMBRE'];
     const milanesas = ['MILA CARTA','MILA MENU','SUPREMA'];
     const otros = ['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
