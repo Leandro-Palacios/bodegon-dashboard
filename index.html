@@ -514,6 +514,19 @@ async function loadProv() {
     const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:L500');
     facturasData = rows.filter(r=>r[0]&&r[1]);
 
+    // Filtrar por mes seleccionado
+    const mesVal = document.getElementById('monthSelect').value;
+    const partesMes = mesVal.split('_');
+    const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+    const mesNum = mesesMap[partesMes[0]] || '';
+    const anioCorto = partesMes[1] ? partesMes[1].slice(-2) : '';
+    const facturasFiltradas = facturasData.filter(r => {
+      if (!mesNum) return true;
+      const f = r[0] || '';
+      const p = f.split('/');
+      return p.length === 3 && p[1] === mesNum && p[2].slice(-2) === anioCorto;
+    });
+
     // Columnas: 0=fecha, 1=proveedor, 2=producto, 3=cantidad, 4=unidad, 5=fecha entrega, 6=estado, 7=precio unitario, 8=subtotal, 9=total factura, 10=total con iva, 11=notas
 
     const porProv = {};
@@ -528,13 +541,17 @@ async function loadProv() {
       const totalIva = pNum(r[10]||'0');
 
       if(!porProv[prov])porProv[prov]={total:0,count:0};
+      // Sumar subtotal de cada producto
+      porProv[prov].total+=subtotal;
 
       const key=`${fecha}_${prov}`;
       if(!facturasUnicas.has(key)){
         facturasUnicas.add(key);
         porProv[prov].count++;
-        porProv[prov].total+=totalFactura; // sumar total de factura, no subtotal por producto
-        facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,productos:[]};
+        facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,subtotalAcum:0,productos:[]};
+      }
+      if(facturasAgrupadas[key]){
+        facturasAgrupadas[key].subtotalAcum+=subtotal;
       }
       if(facturasAgrupadas[key]){
         facturasAgrupadas[key].productos.push({
@@ -573,7 +590,7 @@ async function loadProv() {
             <td style="color:var(--muted);font-size:11px">${f.fecha}</td>
             <td style="font-size:12px">${f.prov.split(' ')[0]}</td>
             <td class="r" style="font-size:11px;color:var(--muted)">${f.productos.length}</td>
-            <td class="r" style="font-size:11px">${f.total>0?fmt(f.total):'—'}</td>
+            <td class="r" style="font-size:11px">${f.total>0?fmt(f.total):f.subtotalAcum>0?fmt(f.subtotalAcum):'—'}</td>
             <td class="r" style="font-size:11px;color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):'—'}</td>
           </tr>
         `).join('')}</tbody>
@@ -609,9 +626,26 @@ function renderDetalleProveedor() {
     return;
   }
 
+  // Filtrar por mes seleccionado
+  const mesVal = document.getElementById('monthSelect').value; // ej: MARZO_2026
+  const partes = mesVal.split('_');
+  const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+  const mesNum = mesesMap[partes[0]] || '';
+  const anio = partes[1] ? partes[1].slice(-2) : '';
+
   const agrupadas = window._facturasAgrupadas || {};
   const facturasDelProv = Object.values(agrupadas)
-    .filter(f => f.prov === prov)
+    .filter(f => {
+      if (f.prov !== prov) return false;
+      // fecha formato DD/MM/YYYY — filtrar por mes/año
+      if (mesNum && f.fecha) {
+        const partesFecha = f.fecha.split('/');
+        if (partesFecha.length === 3) {
+          return partesFecha[1] === mesNum && partesFecha[2].slice(-2) === anio;
+        }
+      }
+      return true;
+    })
     .sort((a,b) => b.fecha.localeCompare(a.fecha));
 
   if (!facturasDelProv.length) {
