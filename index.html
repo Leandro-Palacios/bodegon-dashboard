@@ -574,7 +574,7 @@ async function loadProv() {
     const maxP=list[0]?.[1].total||1;
     document.getElementById('gastosContainer').innerHTML=list.length>0?list.map(([prov,data])=>`
       <div class="bar-row">
-        <div class="bar-label">${prov.split(' ')[0]}</div>
+        <div class="bar-label">${prov.substring(0,14)}</div>
         <div class="bar-track"><div class="bar-fill a" style="width:${data.total/maxP*100}%"></div></div>
         <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${data.total>0?fmt(data.total):data.count+' items'}</div>
       </div>
@@ -588,7 +588,7 @@ async function loadProv() {
         <tbody>${ultimasFacturas.map(f=>`
           <tr>
             <td style="color:var(--muted);font-size:11px">${f.fecha}</td>
-            <td style="font-size:12px">${f.prov.split(' ')[0]}</td>
+            <td style="font-size:12px">${f.prov.substring(0,15)}</td>
             <td class="r" style="font-size:11px;color:var(--muted)">${f.productos.length}</td>
             <td class="r" style="font-size:11px">${f.total>0?fmt(f.total):f.subtotalAcum>0?fmt(f.subtotalAcum):'—'}</td>
             <td class="r" style="font-size:11px;color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):'—'}</td>
@@ -763,7 +763,7 @@ async function loadStock() {
     });
     document.getElementById('stockGrid').innerHTML=Object.entries(cats).map(([prov,items])=>`
       <div class="card">
-        <div class="card-title"><span>▸</span> ${prov.split(' ')[0]}</div>
+        <div class="card-title"><span>▸</span> ${prov.substring(0,16)}</div>
         ${items.map(item=>`
           <div class="stock-item">
             <div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div>
