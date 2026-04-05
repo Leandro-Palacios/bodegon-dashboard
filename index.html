@@ -561,7 +561,20 @@ async function loadProv() {
       }
     });
 
-    const list=Object.entries(porProv).sort((a,b)=>b[1].total-a[1].total);
+    // Recalcular totales por proveedor usando subtotalAcum cuando no hay IVA
+    Object.values(facturasAgrupadas).forEach(f => {
+      const monto = f.totalIva > 0 ? f.totalIva : f.subtotalAcum;
+      if (!porProv[f.prov]) porProv[f.prov] = {total:0, count:0};
+      // Reemplazar el total calculado antes por el correcto
+    });
+    // Recalcular desde cero usando facturasAgrupadas
+    const porProvFinal = {};
+    Object.values(facturasAgrupadas).forEach(f => {
+      if (!porProvFinal[f.prov]) porProvFinal[f.prov] = {total:0, count:0};
+      porProvFinal[f.prov].total += f.totalIva > 0 ? f.totalIva : f.subtotalAcum;
+      porProvFinal[f.prov].count++;
+    });
+    const list=Object.entries(porProvFinal).sort((a,b)=>b[1].total-a[1].total);
     const totalG=list.reduce((s,[,v])=>s+v.total,0);
     const totalFacturas=facturasUnicas.size;
 
