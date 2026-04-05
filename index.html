@@ -541,13 +541,12 @@ async function loadProv() {
       const totalIva = pNum(r[10]||'0');
 
       if(!porProv[prov])porProv[prov]={total:0,count:0};
-      // Sumar subtotal de cada producto
-      porProv[prov].total+=subtotal;
 
       const key=`${fecha}_${prov}`;
       if(!facturasUnicas.has(key)){
         facturasUnicas.add(key);
         porProv[prov].count++;
+        porProv[prov].total+=totalFactura; // sumar total factura una vez por factura
         facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,subtotalAcum:0,productos:[]};
       }
       if(facturasAgrupadas[key]){
