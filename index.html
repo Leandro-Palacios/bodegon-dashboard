@@ -546,7 +546,7 @@ async function loadProv() {
       if(!facturasUnicas.has(key)){
         facturasUnicas.add(key);
         porProv[prov].count++;
-        porProv[prov].total+=totalFactura; // sumar total factura una vez por factura
+        porProv[prov].total+=totalIva; // sumar total con IVA una vez por factura
         facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,subtotalAcum:0,productos:[]};
       }
       if(facturasAgrupadas[key]){
