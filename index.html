@@ -718,7 +718,7 @@ async function loadStock() {
     if (!stockRows) throw new Error('Sin datos de semanas');
 
     const productoStock = {};
-    const productoNames = ['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    const productoNames = ['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','MILA GROSA','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
 
     productoNames.forEach(nombre => {
       for (let i=0; i<stockRows.length; i++) {
@@ -738,7 +738,7 @@ async function loadStock() {
 
     const carnes = ['OJO','LOMO','BONDIOLA','MATAMBRE'];
     const milanesas = ['MILA CARTA','MILA MENU','SUPREMA'];
-    const otros = ['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    const otros = ['SALMON','MILA GROSA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
 
     const renderGrupo = (titulo, lista) => `
       <div class="card">
