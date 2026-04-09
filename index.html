@@ -594,17 +594,23 @@ async function loadProv() {
     `).join(''):'<div class="empty">Sin facturas</div>';
 
     // Últimas facturas — una por fila (agrupadas)
-    const ultimasFacturas = Object.values(facturasAgrupadas).reverse().slice(0,8);
+    // Facturas de hoy
+    const hoy = new Date();
+    const fechaHoy = `${hoy.getDate().toString().padStart(2,'0')}/${(hoy.getMonth()+1).toString().padStart(2,'0')}/${hoy.getFullYear()}`;
+    const facturasHoy = Object.values(facturasAgrupadas).filter(f => f.fecha === fechaHoy);
+    const ultimasFacturas = facturasHoy.length > 0 ? facturasHoy : Object.values(facturasAgrupadas).reverse().slice(0,8);
+    const tituloFacturas = facturasHoy.length > 0 ? `Hoy (${fechaHoy})` : 'Últimas facturas';
+
     document.getElementById('facturasContainer').innerHTML=`
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">${tituloFacturas}</div>
       <table class="dt">
-        <thead><tr><th>Fecha</th><th>Proveedor</th><th style="text-align:right">Items</th><th style="text-align:right">Total</th><th style="text-align:right">Total c/IVA</th></tr></thead>
+        <thead><tr><th>Proveedor</th><th style="text-align:right">Items</th><th style="text-align:right">Sin IVA</th><th style="text-align:right">Con IVA</th></tr></thead>
         <tbody>${ultimasFacturas.map(f=>`
           <tr>
-            <td style="color:var(--muted);font-size:11px">${f.fecha}</td>
-            <td style="font-size:12px">${f.prov.substring(0,15)}</td>
+            <td style="font-size:12px">${f.prov.substring(0,18)}</td>
             <td class="r" style="font-size:11px;color:var(--muted)">${f.productos.length}</td>
             <td class="r" style="font-size:11px">${f.total>0?fmt(f.total):f.subtotalAcum>0?fmt(f.subtotalAcum):'—'}</td>
-            <td class="r" style="font-size:11px;color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):'—'}</td>
+            <td class="r" style="font-size:11px;color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):f.subtotalAcum>0?fmt(f.subtotalAcum):'—'}</td>
           </tr>
         `).join('')}</tbody>
       </table>
