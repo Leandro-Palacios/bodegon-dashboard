@@ -609,14 +609,14 @@ async function loadProv() {
           <tr>
             <td style="font-size:12px">${f.prov.substring(0,18)}</td>
             <td class="r" style="font-size:11px;color:var(--muted)">${f.productos.length}</td>
-            <td class="r" style="font-size:11px">${f.total>0?fmt(f.total):f.subtotalAcum>0?fmt(f.subtotalAcum):'—'}</td>
+            <td class="r" style="font-size:11px">${f.totalIva>0?fmt(f.total):fmt(f.subtotalAcum)}</td>
             <td class="r" style="font-size:11px;color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):'—'}</td>
           </tr>
         `).join('')}
         <tr style="border-top:1px solid var(--border)">
           <td style="font-size:11px;font-weight:600;padding-top:10px">TOTAL DÍA</td>
           <td></td>
-          <td class="r" style="font-size:11px;font-weight:600;padding-top:10px">${fmt(ultimasFacturas.reduce((s,f)=>s+(f.total>0?f.total:f.subtotalAcum),0))}</td>
+          <td class="r" style="font-size:11px;font-weight:600;padding-top:10px">${fmt(ultimasFacturas.reduce((s,f)=>s+(f.totalIva>0?f.total:f.subtotalAcum),0))}</td>
           <td class="r" style="font-size:11px;font-weight:600;padding-top:10px;color:var(--accent)">${fmt(ultimasFacturas.reduce((s,f)=>s+(f.totalIva>0?f.totalIva:0),0)||null)}</td>
         </tr>
         </tbody>
