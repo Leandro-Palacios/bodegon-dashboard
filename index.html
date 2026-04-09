@@ -705,7 +705,7 @@ async function loadStock() {
     let stockRows = null;
     for (let sem = 5; sem >= 1; sem--) {
       try {
-        const r = await fetchSheet(getSheetOps(), `SEMANA ${sem}!A1:H85`);
+        const r = await fetchSheet(getSheetOps(), `SEMANA ${sem}!A1:H95`);
         // Verificar que tiene valores numéricos reales en filas TOTAL
         const tieneDatos = r.some(row => row[0] === 'TOTAL' && row.slice(1).some(v => parseFloat(v) > 0));
         if (tieneDatos) {
@@ -737,8 +737,8 @@ async function loadStock() {
     });
 
     const carnes = ['OJO','LOMO','BONDIOLA','MATAMBRE'];
-    const milanesas = ['MILA CARTA','MILA MENU','SUPREMA'];
-    const otros = ['SALMON','MILA GROSA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    const milanesas = ['MILA CARTA','MILA MENU','MILA GROSA','SUPREMA'];
+    const otros = ['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
 
     const renderGrupo = (titulo, lista) => `
       <div class="card">
