@@ -779,31 +779,54 @@ async function loadStock() {
 
   // Secos/almacén — leer de proveedores
   try {
-    const rows=await fetchSheet(SHEET_PROV,'Stock!A3:G300');
-    const items=rows.filter(r=>r[0]);
-    const cats={};
-    items.forEach(r=>{
-      const prov=r[1]||'Otros';
-      if(!cats[prov])cats[prov]=[];
-      cats[prov].push({producto:r[0],unidad:r[2]||'',actual:parseFloat(r[3])||0,minimo:parseFloat(r[4])||0});
+    const rows = await fetchSheet(SHEET_PROV, 'Stock!A2:G200');
+    const items = rows.filter(r => r[0]);
+
+    const categorias = {
+      '🧺 Almacén': ['El Emporio'],
+      '🧀 Fiambres y Lácteos': ['Molier', 'Federico Provoleta', 'LOGISTICA LA SERENISIMA SA'],
+      '🍦 Helados': ['Helados Eduardo'],
+      '🍟 Congelados': ['Nessuno'],
+      '🧹 Limpieza': ['Lustrol'],
+      '📦 Papelería y Descartables': ['Papelera Julián'],
+    };
+
+    const provToCategoria = {};
+    Object.entries(categorias).forEach(([cat, provs]) => {
+      provs.forEach(p => { provToCategoria[p.toUpperCase().replace(/\./g,'').trim()] = cat; });
     });
-    document.getElementById('stockGrid').innerHTML=Object.entries(cats).map(([prov,items])=>`
+
+    const porCategoria = {};
+    items.forEach(r => {
+      const prov = (r[1] || '').toUpperCase().replace(/\./g,'').trim();
+      const cat = provToCategoria[prov];
+      if (!cat) return;
+      if (!porCategoria[cat]) porCategoria[cat] = [];
+      porCategoria[cat].push({
+        producto: r[0],
+        unidad: r[2] || '',
+        actual: parseFloat(r[3]) || 0,
+        minimo: parseFloat(r[4]) || 0
+      });
+    });
+
+    document.getElementById('stockGrid').innerHTML = Object.entries(porCategoria).map(([cat, items]) => `
       <div class="card">
-        <div class="card-title"><span>▸</span> ${prov.substring(0,16)}</div>
-        ${items.map(item=>`
+        <div class="card-title"><span>▸</span> ${cat}</div>
+        ${items.map(item => `
           <div class="stock-item">
-            <div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div>
+            <div class="dot ${item.actual <= item.minimo ? 'low' : 'ok'}"></div>
             <div class="stock-name">${item.producto}</div>
             <div class="stock-val">${item.actual} ${item.unidad}</div>
           </div>
         `).join('')}
       </div>
     `).join('');
+
   } catch(e) {
     renderStockEjemplo();
   }
-
-  document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
+  document.getElementById('lastUpdate').textContent = `${new Date().toLocaleTimeString('es-AR')}`;
 }
 
 // ── EJEMPLO SIN API KEY ──
