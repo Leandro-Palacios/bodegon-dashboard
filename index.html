@@ -23,7 +23,6 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:var(--font-b); }
 
-  /* HEADER */
   .header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -37,7 +36,6 @@
   .header-left { display:flex; align-items:center; gap:32px; }
   .logo-text { font-family:var(--font-d); font-size:22px; letter-spacing:3px; }
   
-  /* TABS */
   .tabs { display:flex; align-items:stretch; gap:0; }
   .tab-btn {
     background: none;
@@ -57,7 +55,6 @@
   .tab-btn:hover { color: var(--text); }
   .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* SUBHEADER */
   .subheader {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -90,16 +87,12 @@
     cursor: pointer;
   }
   .last-update { margin-left:auto; font-size:11px; color:var(--muted); }
-
-  /* HEADER RIGHT */
   .header-right { display:flex; align-items:center; }
 
-  /* MAIN */
   .main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
   .tab-content { display:none; }
   .tab-content.active { display:block; }
 
-  /* KPI */
   .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
   .kpi-card {
     background: var(--surface);
@@ -114,16 +107,13 @@
   .kpi-value { font-family:var(--font-d); font-size:34px; letter-spacing:1px; line-height:1; }
   .kpi-sub { font-size:11px; color:var(--muted); margin-top:5px; }
 
-  /* GRID */
   .g2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
   .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px; }
 
-  /* CARD */
   .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:22px; }
   .card-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:6px; }
   .card-title span { color:var(--accent); }
 
-  /* BARS */
   .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
   .bar-row:last-child { margin-bottom:0; }
   .bar-label { font-size:13px; width:120px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -136,7 +126,6 @@
   .bar-val { font-family:var(--font-d); font-size:15px; width:110px; text-align:right; flex-shrink:0; }
   .bar-sub { font-size:11px; color:var(--muted); }
 
-  /* SEMANAS */
   .sem-row { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
   .sem-row:last-child { border-bottom:none; }
   .sem-label { font-size:12px; color:var(--muted); width:65px; flex-shrink:0; }
@@ -146,7 +135,6 @@
   .sem-cubs { font-size:11px; color:var(--muted); margin-top:3px; }
   .sem-val { font-family:var(--font-d); font-size:17px; width:120px; text-align:right; flex-shrink:0; }
 
-  /* TABLE */
   .dt { width:100%; border-collapse:collapse; font-size:13px; }
   .dt th { text-align:left; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:1px; padding:7px 10px; border-bottom:1px solid var(--border); font-weight:500; }
   .dt td { padding:10px 10px; border-bottom:1px solid rgba(255,255,255,0.04); }
@@ -155,18 +143,15 @@
   .dt td.r { text-align:right; }
   .dt td.ac { color:var(--accent); }
 
-  /* RANK */
   .rn { font-family:var(--font-d); font-size:18px; color:var(--muted); }
   .rn.g1 { color:#ffd700; }
   .rn.g2 { color:#c0c0c0; }
   .rn.g3 { color:#cd7f32; }
 
-  /* SECTION DIV */
   .sdiv { display:flex; align-items:center; gap:14px; margin:28px 0 18px; }
   .sdiv-t { font-family:var(--font-d); font-size:20px; letter-spacing:3px; color:var(--accent); white-space:nowrap; }
   .sdiv-l { flex:1; height:1px; background:var(--border); }
 
-  /* STOCK */
   .stock-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px; }
   .stock-item:last-child { border-bottom:none; }
   .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
@@ -176,7 +161,6 @@
   .stock-name { flex:1; }
   .stock-val { color:var(--muted); }
 
-  /* LOADING / EMPTY */
   .loading { display:flex; align-items:center; justify-content:center; height:100px; color:var(--muted); font-size:13px; gap:8px; }
   .spinner { width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
   @keyframes spin { to{transform:rotate(360deg)} }
@@ -316,7 +300,12 @@
     </div>
 
     <div class="sdiv"><div class="sdiv-t">DEPÓSITO / SECOS</div><div class="sdiv-l"></div></div>
-    <div class="g3" id="stockGrid">
+    <div class="g3" id="stockGrid" style="margin-bottom:14px">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
+    </div>
+
+    <div class="sdiv"><div class="sdiv-t">VINOS</div><div class="sdiv-l"></div></div>
+    <div class="g3" id="stockVinos">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
     </div>
 
@@ -350,7 +339,6 @@ function pNum(s) {
   if (str.includes(',')) {
     str = str.replace(/\./g, '').replace(',', '.');
   } else if ((str.match(/\./g) || []).length > 1) {
-    // múltiples puntos = separadores de miles
     str = str.replace(/\./g, '');
   }
   return parseFloat(str) || 0;
@@ -390,7 +378,6 @@ function reloadCurrent() {
 // ── OPERACIONES ──
 async function loadOps() {
   document.getElementById('lastUpdate').textContent = 'Actualizando...';
-  const sheet = document.getElementById('monthSelect').value;
   try {
     const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H70`);
     renderKPIs(rows);
@@ -467,9 +454,7 @@ function renderMozos(rows) {
   `).join('');
 }
 
-// ── PRODUCTOS Y MERMA ──
 function renderProductos(rows) {
-  // Productos filas 42-52 (índice 41-51), columnas A=producto, B=unidades, C=ingresos
   const productos = rows.slice(41, 52)
     .filter(r => r[0] && r[0] !== 'Producto' && !r[0].includes('VENTA') && !r[0].includes('MERMA'))
     .map(r => ({ nombre: r[0]||'', unidades: pNum(r[1]), ingresos: pNum(r[2]) }))
@@ -486,7 +471,6 @@ function renderProductos(rows) {
     `).join('');
   }
 
-  // Merma filas 56-67 (índice 55-66)
   const merma = rows.slice(55, 67)
     .filter(r => r[0] && !r[0].includes('MERMA') && !r[0].includes('Producto'))
     .map(r => ({ nombre: r[0]||'', cantidad: pNum(r[1]) }))
@@ -504,8 +488,6 @@ function renderProductos(rows) {
   }
 }
 
-
-// Variable global para guardar datos de facturas
 let facturasData = [];
 
 async function loadProv() {
@@ -514,7 +496,6 @@ async function loadProv() {
     const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:L500');
     facturasData = rows.filter(r=>r[0]&&r[1]);
 
-    // Filtrar por mes seleccionado
     const mesVal = document.getElementById('monthSelect').value;
     const partesMes = mesVal.split('_');
     const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
@@ -527,11 +508,9 @@ async function loadProv() {
       return p.length === 3 && p[1] === mesNum && p[2].slice(-2) === anioCorto;
     });
 
-    // Columnas: 0=fecha, 1=proveedor, 2=producto, 3=cantidad, 4=unidad, 5=fecha entrega, 6=estado, 7=precio unitario, 8=subtotal, 9=total factura, 10=total con iva, 11=notas
-
     const porProv = {};
     const facturasUnicas = new Set();
-    const facturasAgrupadas = {}; // key: fecha_proveedor -> {total, totalIva, productos[]}
+    const facturasAgrupadas = {};
 
     facturasFiltradas.forEach(r=>{
       const prov=(r[1]||'').trim().toUpperCase().replace(/\./g,'').replace(/\s+/g,' ').trim();
@@ -547,7 +526,7 @@ async function loadProv() {
         facturasUnicas.add(key);
         porProv[prov].count++;
         const montoFactura = totalIva > 0 ? totalIva : totalFactura > 0 ? totalFactura : subtotal;
-        porProv[prov].total+= montoFactura; // con IVA si existe, sino sin IVA, sino subtotal del producto
+        porProv[prov].total+= montoFactura;
         facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,subtotalAcum:0,productos:[]};
       }
       if(facturasAgrupadas[key]){
@@ -561,13 +540,6 @@ async function loadProv() {
       }
     });
 
-    // Recalcular totales por proveedor usando subtotalAcum cuando no hay IVA
-    Object.values(facturasAgrupadas).forEach(f => {
-      const monto = f.totalIva > 0 ? f.totalIva : f.subtotalAcum;
-      if (!porProv[f.prov]) porProv[f.prov] = {total:0, count:0};
-      // Reemplazar el total calculado antes por el correcto
-    });
-    // Recalcular desde cero usando facturasAgrupadas
     const porProvFinal = {};
     Object.values(facturasAgrupadas).forEach(f => {
       if (!porProvFinal[f.prov]) porProvFinal[f.prov] = {total:0, count:0};
@@ -583,7 +555,6 @@ async function loadProv() {
     document.getElementById('provTop').textContent=(list[0]?.[0]||'—').split(' ')[0];
     document.getElementById('provProm').textContent=totalFacturas>0&&totalG>0?fmt(totalG/totalFacturas):'—';
 
-    // Gastos por proveedor con barras
     const maxP=list[0]?.[1].total||1;
     document.getElementById('gastosContainer').innerHTML=list.length>0?list.map(([prov,data])=>`
       <div class="bar-row">
@@ -593,8 +564,6 @@ async function loadProv() {
       </div>
     `).join(''):'<div class="empty">Sin facturas</div>';
 
-    // Últimas facturas — una por fila (agrupadas)
-    // Facturas de hoy
     const hoy = new Date();
     const fechaHoy = `${hoy.getDate().toString().padStart(2,'0')}/${(hoy.getMonth()+1).toString().padStart(2,'0')}/${hoy.getFullYear()}`;
     const facturasHoy = Object.values(facturasAgrupadas).filter(f => f.fecha === fechaHoy);
@@ -623,7 +592,6 @@ async function loadProv() {
       </table>
     `;
 
-    // Poblar desplegable de proveedores
     const provSelect = document.getElementById('provSelect');
     const currentVal = provSelect.value;
     provSelect.innerHTML = '<option value="">— Seleccioná un proveedor —</option>';
@@ -635,7 +603,6 @@ async function loadProv() {
     });
     if(currentVal) provSelect.value = currentVal;
 
-    // Guardar agrupadas para el detalle
     window._facturasAgrupadas = facturasAgrupadas;
 
   } catch(e) {
@@ -652,8 +619,7 @@ function renderDetalleProveedor() {
     return;
   }
 
-  // Filtrar por mes seleccionado
-  const mesVal = document.getElementById('monthSelect').value; // ej: MARZO_2026
+  const mesVal = document.getElementById('monthSelect').value;
   const partes = mesVal.split('_');
   const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
   const mesNum = mesesMap[partes[0]] || '';
@@ -663,7 +629,6 @@ function renderDetalleProveedor() {
   const facturasDelProv = Object.values(agrupadas)
     .filter(f => {
       if (f.prov !== prov) return false;
-      // fecha formato DD/MM/YYYY — filtrar por mes/año
       if (mesNum && f.fecha) {
         const partesFecha = f.fecha.split('/');
         if (partesFecha.length === 3) {
@@ -714,17 +679,12 @@ async function loadStock() {
 
   // Carnes — buscar última semana con datos
   try {
-    // Intentar semanas de 5 a 1 hasta encontrar una con datos
     let stockRows = null;
     for (let sem = 5; sem >= 1; sem--) {
       try {
         const r = await fetchSheet(getSheetOps(), `SEMANA ${sem}!A1:H95`);
-        // Verificar que tiene valores numéricos reales en filas TOTAL
         const tieneDatos = r.some(row => row[0] === 'TOTAL' && row.slice(1).some(v => parseFloat(v) > 0));
-        if (tieneDatos) {
-          stockRows = r;
-          break;
-        }
+        if (tieneDatos) { stockRows = r; break; }
       } catch(e) { continue; }
     }
 
@@ -736,7 +696,6 @@ async function loadStock() {
     productoNames.forEach(nombre => {
       for (let i=0; i<stockRows.length; i++) {
         if (stockRows[i][0] && stockRows[i][0].trim() === nombre) {
-          // Buscar fila TOTAL (no STOCK) — es el stock al final del día
           for (let j=i+1; j<Math.min(i+8, stockRows.length); j++) {
             if (stockRows[j][0] === 'TOTAL') {
               const vals = stockRows[j].slice(1,8).filter(v => v !== '' && v !== undefined && parseFloat(v) > 0);
@@ -777,29 +736,32 @@ async function loadStock() {
     renderStockEjemplo();
   }
 
-  // Secos/almacén — leer de proveedores
+  // Secos/almacén
   try {
-    const rows = await fetchSheet(SHEET_PROV, 'Stock!A2:G200');
+    const rows = await fetchSheet(SHEET_PROV, 'Stock!A2:G500');
     const items = rows.filter(r => r[0]);
 
-    const categorias = {
-      '🧺 Almacén': ['El Emporio', 'El Emporio de Lanús S.A.'],
-      '🧀 Fiambres y Lácteos': ['Molier', 'Federico Provoleta', 'LOGISTICA LA SERENISIMA SA'],
-      '🍦 Helados': ['Helados Eduardo'],
-      '🍟 Congelados': ['Nessuno'],
-      '🧹 Limpieza': ['Lustrol'],
-      '📦 Papelería y Descartables': ['Papelera Julián'],
-    };
+    const categoriaMap = [
+      { cat: '🧺 Almacén', keys: ['emporio'] },
+      { cat: '🧀 Fiambres y Lácteos', keys: ['molier', 'moliere', 'provoleta', 'serenisima'] },
+      { cat: '🍦 Helados', keys: ['helados', 'eduardo'] },
+      { cat: '🍟 Congelados', keys: ['nessuno', 'bibione'] },
+      { cat: '🧹 Limpieza', keys: ['lustrol'] },
+      { cat: '📦 Papelería y Descartables', keys: ['julian', 'papelera', 'terracina'] },
+    ];
 
-    const provToCategoria = {};
-    Object.entries(categorias).forEach(([cat, provs]) => {
-      provs.forEach(p => { provToCategoria[p.toUpperCase().replace(/\./g,'').trim()] = cat; });
-    });
+    function getCategoria(proveedor) {
+      const norm = (proveedor || '').toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      for (const { cat, keys } of categoriaMap) {
+        if (keys.some(k => norm.includes(k))) return cat;
+      }
+      return null;
+    }
 
     const porCategoria = {};
     items.forEach(r => {
-      const prov = (r[1] || '').toUpperCase().replace(/\./g,'').trim();
-      const cat = provToCategoria[prov];
+      const cat = getCategoria(r[1]);
       if (!cat) return;
       if (!porCategoria[cat]) porCategoria[cat] = [];
       porCategoria[cat].push({
@@ -826,6 +788,51 @@ async function loadStock() {
   } catch(e) {
     renderStockEjemplo();
   }
+
+  // Vinos
+  try {
+    const rowsVinos = await fetchSheet(SHEET_PROV, 'Stock Vinos!A2:G200');
+    const vinosItems = rowsVinos.filter(r => r[0]);
+
+    const ordenTipos = ['Tinto', 'Espumante', 'Blanco', 'Rosado', 'Dulce'];
+    const etiquetas = {
+      'Tinto': '🍷 Tintos',
+      'Espumante': '🥂 Espumantes',
+      'Blanco': '🍾 Blancos',
+      'Rosado': '🌸 Rosados',
+      'Dulce': '🍯 Dulces',
+    };
+
+    const porTipo = {};
+    vinosItems.forEach(r => {
+      const tipo = r[1] || 'Otros';
+      if (!porTipo[tipo]) porTipo[tipo] = [];
+      porTipo[tipo].push({
+        producto: r[0],
+        actual: parseFloat(r[3]) || 0,
+        minimo: parseFloat(r[4]) || 0
+      });
+    });
+
+    document.getElementById('stockVinos').innerHTML = ordenTipos
+      .filter(tipo => porTipo[tipo] && porTipo[tipo].length > 0)
+      .map(tipo => `
+        <div class="card">
+          <div class="card-title"><span>▸</span> ${etiquetas[tipo]}</div>
+          ${porTipo[tipo].map(item => `
+            <div class="stock-item">
+              <div class="dot ${item.actual <= item.minimo ? 'low' : 'ok'}"></div>
+              <div class="stock-name">${item.producto}</div>
+              <div class="stock-val">${item.actual} bot</div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+
+  } catch(e) {
+    document.getElementById('stockVinos').innerHTML = '<div class="empty">Sin datos de vinos</div>';
+  }
+
   document.getElementById('lastUpdate').textContent = `${new Date().toLocaleTimeString('es-AR')}`;
 }
 
@@ -862,7 +869,6 @@ function renderEjemplo() {
     </div>
   `).join('');
 
-  // Stock carnes ejemplo
   const stockCarnes = {
     'Carnes': [{n:'Ojo de bife',s:44,l:false},{n:'Lomo',s:18,l:false},{n:'Bondiola',s:96,l:false},{n:'Matambre',s:12,l:false}],
     'Milanesas': [{n:'Mila Carta',s:149,l:false},{n:'Mila Menú',s:50,l:false},{n:'Suprema',s:33,l:false}],
@@ -881,7 +887,6 @@ function renderEjemplo() {
     </div>
   `).join('');
 
-  // Stock secos ejemplo
   const stockSecos = {
     'El Emporio': [{p:'Pack azúcar',a:3,m:2},{p:'Latas tomate',a:8,m:10},{p:'Harina',a:2,m:5},{p:'Café en grano',a:3,m:2}],
     'Molier': [{p:'Mozzarella',a:4,m:3},{p:'Jamón cocido',a:1,m:2},{p:'Panceta',a:3,m:2}],
