@@ -493,7 +493,7 @@ let facturasData = [];
 async function loadProv() {
   document.getElementById('lastUpdate').textContent = 'Actualizando...';
   try {
-    const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:L500');
+    const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:L10000');
     facturasData = rows.filter(r=>r[0]&&r[1]);
 
     const mesVal = document.getElementById('monthSelect').value;
