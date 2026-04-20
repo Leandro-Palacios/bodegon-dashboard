@@ -937,5 +937,30 @@ function renderStockEjemplo() {
 
 loadOps();
 </script>
+
+<button id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="
+  display:none;
+  position:fixed;
+  bottom:28px;
+  right:28px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:var(--muted);
+  font-size:18px;
+  font-weight:700;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  cursor:pointer;
+  z-index:999;
+  backdrop-filter:blur(4px);
+">↑</button>
+<script>
+  const topBtn = document.getElementById('topBtn');
+  window.addEventListener('scroll', () => {
+    topBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+  });
+</script>
+
 </body>
 </html>
