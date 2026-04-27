@@ -405,7 +405,7 @@ function renderKPIs(rows) {
 }
 
 function renderSemanas(rows) {
-  const sems = rows.slice(10,14).map(r=>({label:r[0]||'',fact:pNum(r[1]),cubs:pNum(r[2])})).filter(s=>s.label);
+  const sems = rows.slice(10,15).map(r=>({label:r[0]||'',fact:pNum(r[1]),cubs:pNum(r[2])})).filter(s=>s.label);
   const max = Math.max(...sems.map(s=>s.fact),1);
   document.getElementById('semanasContainer').innerHTML = sems.map(s=>`
     <div class="sem-row">
