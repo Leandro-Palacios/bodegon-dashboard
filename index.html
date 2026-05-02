@@ -455,7 +455,7 @@ function renderMozos(rows) {
 }
 
 function renderProductos(rows) {
-  const productos = rows.slice(41, 52)
+  const productos = rows.slice(41, 53)
     .filter(r => r[0] && r[0] !== 'Producto' && !r[0].includes('VENTA') && !r[0].includes('MERMA'))
     .map(r => ({ nombre: r[0]||'', unidades: pNum(r[1]), ingresos: pNum(r[2]) }))
     .filter(p => p.nombre && (p.unidades > 0 || p.ingresos > 0));
@@ -471,12 +471,13 @@ function renderProductos(rows) {
     `).join('');
   }
 
-  const merma = rows.slice(55, 67)
+  const merma = rows.slice(55, 68)
     .filter(r => r[0] && !r[0].includes('MERMA') && !r[0].includes('Producto'))
     .map(r => ({ nombre: r[0]||'', cantidad: pNum(r[1]) }))
     .filter(m => m.nombre && m.cantidad > 0);
 
-  if (merma.length > 0) {
+  document.getElementById('mermaContainer').innerHTML = '';
+if (merma.length > 0) {
     const maxM = Math.max(...merma.map(m => m.cantidad), 1);
     document.getElementById('mermaContainer').innerHTML = merma.map(m => `
       <div class="bar-row">
