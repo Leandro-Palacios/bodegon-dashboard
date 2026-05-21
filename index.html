@@ -166,6 +166,9 @@
   @keyframes spin { to{transform:rotate(360deg)} }
   .empty { text-align:center; color:var(--muted); font-size:13px; padding:32px; }
 
+  .badge-ok { background:rgba(77,184,122,0.15); color:var(--green); font-size:11px; padding:2px 8px; border-radius:4px; }
+  .badge-warn { background:rgba(224,82,82,0.15); color:var(--red); font-size:11px; padding:2px 8px; border-radius:4px; }
+
   @media(max-width:900px) {
     .kpi-grid { grid-template-columns:repeat(2,1fr); }
     .g2,.g3 { grid-template-columns:1fr; }
@@ -208,13 +211,11 @@
 
 <main class="main">
 
-  <!-- ══ OPERACIONES ══ -->
+  <!-- OPERACIONES -->
   <div class="tab-content active" id="tab-ops">
-
     <div class="kpi-grid" id="kpiGrid">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
     </div>
-
     <div class="g2">
       <div class="card">
         <div class="card-title"><span>▸</span> Facturación Semanal</div>
@@ -225,12 +226,10 @@
         <div id="canalesContainer"><div class="loading"><div class="spinner"></div></div></div>
       </div>
     </div>
-
     <div class="sdiv"><div class="sdiv-t">RANKING DE MOZOS</div><div class="sdiv-l"></div></div>
     <div class="card" style="margin-bottom:14px">
       <div id="mozosContainer"><div class="loading"><div class="spinner"></div></div></div>
     </div>
-
     <div class="sdiv"><div class="sdiv-t">PRODUCTOS & MERMA</div><div class="sdiv-l"></div></div>
     <div class="g2">
       <div class="card">
@@ -242,31 +241,16 @@
         <div id="mermaContainer"><div class="empty">Sin datos</div></div>
       </div>
     </div>
-
   </div>
 
-  <!-- ══ PROVEEDORES ══ -->
+  <!-- PROVEEDORES -->
   <div class="tab-content" id="tab-prov">
-
     <div class="kpi-grid" style="margin-bottom:24px">
-      <div class="kpi-card">
-        <div class="kpi-label">Total Gastado</div>
-        <div class="kpi-value" id="provTotal" style="font-size:26px">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Facturas Cargadas</div>
-        <div class="kpi-value" id="provCount">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Proveedor Principal</div>
-        <div class="kpi-value" id="provTop" style="font-size:20px">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Prom x Factura</div>
-        <div class="kpi-value" id="provProm" style="font-size:26px">—</div>
-      </div>
+      <div class="kpi-card"><div class="kpi-label">Total Gastado</div><div class="kpi-value" id="provTotal" style="font-size:26px">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Facturas Cargadas</div><div class="kpi-value" id="provCount">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Proveedor Principal</div><div class="kpi-value" id="provTop" style="font-size:20px">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Prom x Factura</div><div class="kpi-value" id="provProm" style="font-size:26px">—</div></div>
     </div>
-
     <div class="g2">
       <div class="card">
         <div class="card-title"><span>▸</span> Gastos por Proveedor</div>
@@ -277,7 +261,6 @@
         <div id="facturasContainer"><div class="loading"><div class="spinner"></div></div></div>
       </div>
     </div>
-
     <div class="sdiv" style="margin-top:24px"><div class="sdiv-t">DETALLE POR PROVEEDOR</div><div class="sdiv-l"></div></div>
     <div class="card">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
@@ -288,10 +271,9 @@
       </div>
       <div id="detalleProvContainer"><div class="empty">Seleccioná un proveedor para ver el detalle</div></div>
     </div>
-
   </div>
 
-  <!-- ══ STOCK ══ -->
+  <!-- STOCK -->
   <div class="tab-content" id="tab-stock">
 
     <div class="sdiv"><div class="sdiv-t">PRODUCTOS ELABORADOS</div><div class="sdiv-l"></div></div>
@@ -305,8 +287,21 @@
     </div>
 
     <div class="sdiv"><div class="sdiv-t">VINOS</div><div class="sdiv-l"></div></div>
-    <div class="g3" id="stockVinos">
+    <div class="g3" id="stockVinos" style="margin-bottom:14px">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
+    </div>
+
+    <div class="sdiv"><div class="sdiv-t">TOP 5 VINOS MÁS VENDIDOS</div><div class="sdiv-l"></div></div>
+    <div class="card" style="margin-bottom:14px">
+      <div id="vinosTopContainer"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <div class="sdiv"><div class="sdiv-t">MOVIMIENTOS DE VINOS</div><div class="sdiv-l"></div></div>
+    <div class="kpi-grid" id="vinosKpis" style="margin-bottom:14px">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
+    </div>
+    <div class="card">
+      <div id="vinosMovContainer"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
   </div>
@@ -329,18 +324,14 @@ const SHEETS_MESES = {
 function getSheetOps() { return SHEETS_MESES[document.getElementById('monthSelect').value] || SHEETS_MESES['MARZO_2026']; }
 const SHEET_PROV = '1Ux55KL03zQp2m8UvSMW-x14kYX4FMyWUuIDKBrVyLus';
 const API_KEY = 'AIzaSyB02rsTd-NzUxHFc41Y5JZ5KeJ3YfpZftU';
-
 let currentTab = 'ops';
 
 function pNum(s) {
   if (!s && s !== 0) return 0;
   if (typeof s === 'number') return s;
   let str = String(s).trim().replace(/\s+/g, '').replace(/\$/g, '');
-  if (str.includes(',')) {
-    str = str.replace(/\./g, '').replace(',', '.');
-  } else if ((str.match(/\./g) || []).length > 1) {
-    str = str.replace(/\./g, '');
-  }
+  if (str.includes(',')) { str = str.replace(/\./g, '').replace(',', '.'); }
+  else if ((str.match(/\./g) || []).length > 1) { str = str.replace(/\./g, ''); }
   return parseFloat(str) || 0;
 }
 function fmt(n) {
@@ -348,9 +339,7 @@ function fmt(n) {
   if (!num) return '—';
   return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(num);
 }
-function fmtN(n) {
-  return new Intl.NumberFormat('es-AR').format(pNum(n));
-}
+function fmtN(n) { return new Intl.NumberFormat('es-AR').format(pNum(n)); }
 
 async function fetchSheet(id, range) {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
@@ -375,39 +364,28 @@ function reloadCurrent() {
   if (currentTab === 'stock') loadStock();
 }
 
-// ── OPERACIONES ──
 async function loadOps() {
   document.getElementById('lastUpdate').textContent = 'Actualizando...';
   try {
     const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H70`);
-    renderKPIs(rows);
-    renderSemanas(rows);
-    renderCanales(rows);
-    renderMozos(rows);
-    renderProductos(rows);
-  } catch(e) {
-    renderEjemplo();
-  }
+    renderKPIs(rows); renderSemanas(rows); renderCanales(rows); renderMozos(rows); renderProductos(rows);
+  } catch(e) { renderEjemplo(); }
   document.getElementById('lastUpdate').textContent = `${new Date().toLocaleTimeString('es-AR')}`;
 }
 
 function renderKPIs(rows) {
-  const fact = pNum(rows[5]?.[0]);
-  const cubs = pNum(rows[5]?.[2]);
-  const prom = pNum(rows[5]?.[4]);
-  const vs = rows[5]?.[6] || '—';
+  const fact=pNum(rows[5]?.[0]), cubs=pNum(rows[5]?.[2]), prom=pNum(rows[5]?.[4]), vs=rows[5]?.[6]||'—';
   document.getElementById('kpiGrid').innerHTML = `
     <div class="kpi-card"><div class="kpi-label">💰 Facturación Total</div><div class="kpi-value">${fact>0?fmt(fact):'—'}</div><div class="kpi-sub">en el mes</div></div>
     <div class="kpi-card"><div class="kpi-label">👥 Cubiertos Totales</div><div class="kpi-value">${cubs>0?fmtN(cubs):'—'}</div><div class="kpi-sub">en el mes</div></div>
     <div class="kpi-card"><div class="kpi-label">📊 Promedio x Cubierto</div><div class="kpi-value">${prom>0?fmt(prom):'—'}</div><div class="kpi-sub">por cubierto</div></div>
-    <div class="kpi-card"><div class="kpi-label">📈 VS Mes Anterior</div><div class="kpi-value">${vs}</div><div class="kpi-sub">variación</div></div>
-  `;
+    <div class="kpi-card"><div class="kpi-label">📈 VS Mes Anterior</div><div class="kpi-value">${vs}</div><div class="kpi-sub">variación</div></div>`;
 }
 
 function renderSemanas(rows) {
-  const sems = rows.slice(10,15).map(r=>({label:r[0]||'',fact:pNum(r[1]),cubs:pNum(r[2])})).filter(s=>s.label);
-  const max = Math.max(...sems.map(s=>s.fact),1);
-  document.getElementById('semanasContainer').innerHTML = sems.map(s=>`
+  const sems=rows.slice(10,15).map(r=>({label:r[0]||'',fact:pNum(r[1]),cubs:pNum(r[2])})).filter(s=>s.label);
+  const max=Math.max(...sems.map(s=>s.fact),1);
+  document.getElementById('semanasContainer').innerHTML=sems.map(s=>`
     <div class="sem-row">
       <div class="sem-label">${s.label}</div>
       <div class="sem-wrap">
@@ -415,32 +393,26 @@ function renderSemanas(rows) {
         <div class="sem-cubs">${s.cubs>0?fmtN(s.cubs)+' cubiertos':'sin datos'}</div>
       </div>
       <div class="sem-val">${s.fact>0?fmt(s.fact):'—'}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderCanales(rows) {
-  const canales = rows.slice(33,37).map(r=>({nombre:r[0]||'',total:pNum(r[3])})).filter(c=>c.nombre);
-  const max = Math.max(...canales.map(c=>c.total),1);
-  const colors = ['a','b','g','a'];
-  document.getElementById('canalesContainer').innerHTML = canales.map((c,i)=>`
+  const canales=rows.slice(33,37).map(r=>({nombre:r[0]||'',total:pNum(r[3])})).filter(c=>c.nombre);
+  const max=Math.max(...canales.map(c=>c.total),1);
+  const colors=['a','b','g','a'];
+  document.getElementById('canalesContainer').innerHTML=canales.map((c,i)=>`
     <div class="bar-row">
       <div class="bar-label">${c.nombre}</div>
       <div class="bar-track"><div class="bar-fill ${colors[i]}" style="width:${c.total/max*100}%"></div></div>
       <div class="bar-val">${c.total>0?fmt(c.total):'—'}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderMozos(rows) {
-  const mozos = rows.slice(18,29)
-    .filter(r=>r[5]&&!r[5].includes('ERROR')&&r[5]!=='Mozo')
-    .map(r=>({nombre:r[5]||'',total:pNum(r[6]),cubs:pNum(r[7])}))
-    .filter(m=>m.nombre&&m.total>0)
-    .sort((a,b)=>b.total-a.total);
+  const mozos=rows.slice(18,29).filter(r=>r[5]&&!r[5].includes('ERROR')&&r[5]!=='Mozo')
+    .map(r=>({nombre:r[5]||'',total:pNum(r[6]),cubs:pNum(r[7])})).filter(m=>m.nombre&&m.total>0).sort((a,b)=>b.total-a.total);
   if (!mozos.length){document.getElementById('mozosContainer').innerHTML='<div class="empty">Sin datos</div>';return;}
-  const max=mozos[0].total;
-  const rks=['g1','g2','g3'];
+  const max=mozos[0].total; const rks=['g1','g2','g3'];
   document.getElementById('mozosContainer').innerHTML=mozos.map((m,i)=>`
     <div class="bar-row" style="margin-bottom:16px">
       <div style="width:26px;flex-shrink:0"><span class="rn ${rks[i]||''}">${i+1}</span></div>
@@ -450,42 +422,32 @@ function renderMozos(rows) {
       </div>
       <div class="bar-track" style="height:9px"><div class="bar-fill a" style="width:${m.total/max*100}%"></div></div>
       <div class="bar-val">${fmt(m.total)}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderProductos(rows) {
-  const productos = rows.slice(41, 53)
-    .filter(r => r[0] && r[0] !== 'Producto' && !r[0].includes('VENTA') && !r[0].includes('MERMA'))
-    .map(r => ({ nombre: r[0]||'', unidades: pNum(r[1]), ingresos: pNum(r[2]) }))
-    .filter(p => p.nombre && (p.unidades > 0 || p.ingresos > 0));
-
-  if (productos.length > 0) {
-    const maxU = Math.max(...productos.map(p => p.unidades), 1);
-    document.getElementById('productosContainer').innerHTML = productos.map(p => `
+  const productos=rows.slice(41,53).filter(r=>r[0]&&r[0]!=='Producto'&&!r[0].includes('VENTA')&&!r[0].includes('MERMA'))
+    .map(r=>({nombre:r[0]||'',unidades:pNum(r[1]),ingresos:pNum(r[2])})).filter(p=>p.nombre&&(p.unidades>0||p.ingresos>0));
+  if (productos.length>0) {
+    const maxU=Math.max(...productos.map(p=>p.unidades),1);
+    document.getElementById('productosContainer').innerHTML=productos.map(p=>`
       <div class="bar-row">
         <div class="bar-label">${p.nombre.replace(/🥩|🐟/g,'').trim()}</div>
         <div class="bar-track"><div class="bar-fill a" style="width:${p.unidades/maxU*100}%"></div></div>
         <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${fmtN(p.unidades)} u</div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
-
-  const merma = rows.slice(55, 68)
-    .filter(r => r[0] && !r[0].includes('MERMA') && !r[0].includes('Producto'))
-    .map(r => ({ nombre: r[0]||'', cantidad: pNum(r[1]) }))
-    .filter(m => m.nombre && m.cantidad > 0);
-
-  document.getElementById('mermaContainer').innerHTML = '';
-if (merma.length > 0) {
-    const maxM = Math.max(...merma.map(m => m.cantidad), 1);
-    document.getElementById('mermaContainer').innerHTML = merma.map(m => `
+  const merma=rows.slice(55,68).filter(r=>r[0]&&!r[0].includes('MERMA')&&!r[0].includes('Producto'))
+    .map(r=>({nombre:r[0]||'',cantidad:pNum(r[1])})).filter(m=>m.nombre&&m.cantidad>0);
+  document.getElementById('mermaContainer').innerHTML='';
+  if (merma.length>0) {
+    const maxM=Math.max(...merma.map(m=>m.cantidad),1);
+    document.getElementById('mermaContainer').innerHTML=merma.map(m=>`
       <div class="bar-row">
         <div class="bar-label">${m.nombre.replace(/🥩|🐟/g,'').trim()}</div>
         <div class="bar-track"><div class="bar-fill" style="width:${m.cantidad/maxM*100}%;background:var(--red)"></div></div>
         <div class="bar-val" style="font-size:13px;font-family:var(--font-b);color:var(--red)">${fmtN(m.cantidad)} u</div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 }
 
@@ -496,81 +458,57 @@ async function loadProv() {
   try {
     const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:L10000');
     facturasData = rows.filter(r=>r[0]&&r[1]);
-
-    const mesVal = document.getElementById('monthSelect').value;
-    const partesMes = mesVal.split('_');
-    const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
-    const mesNum = mesesMap[partesMes[0]] || '';
-    const anioCorto = partesMes[1] ? partesMes[1].slice(-2) : '';
-    const facturasFiltradas = facturasData.filter(r => {
-      if (!mesNum) return true;
-      const f = r[0] || '';
-      const p = f.split('/');
-      return p.length === 3 && p[1] === mesNum && p[2].slice(-2) === anioCorto;
+    const mesVal=document.getElementById('monthSelect').value;
+    const partesMes=mesVal.split('_');
+    const mesesMap={ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+    const mesNum=mesesMap[partesMes[0]]||'';
+    const anioCorto=partesMes[1]?partesMes[1].slice(-2):'';
+    const facturasFiltradas=facturasData.filter(r=>{
+      if(!mesNum)return true;
+      const f=r[0]||''; const p=f.split('/');
+      return p.length===3&&p[1]===mesNum&&p[2].slice(-2)===anioCorto;
     });
-
-    const porProv = {};
-    const facturasUnicas = new Set();
-    const facturasAgrupadas = {};
-
+    const porProv={}, facturasUnicas=new Set(), facturasAgrupadas={};
     facturasFiltradas.forEach(r=>{
       const prov=(r[1]||'').trim().toUpperCase().replace(/\./g,'').replace(/\s+/g,' ').trim();
       const fecha=r[0]||'';
-      const subtotal = pNum(r[8]||'0');
-      const totalFactura = pNum(r[9]||'0');
-      const totalIva = pNum(r[10]||'0');
-
+      const subtotal=pNum(r[8]||'0'), totalFactura=pNum(r[9]||'0'), totalIva=pNum(r[10]||'0');
       if(!porProv[prov])porProv[prov]={total:0,count:0};
-
       const key=`${fecha}_${prov}`;
       if(!facturasUnicas.has(key)){
         facturasUnicas.add(key);
         porProv[prov].count++;
-        const montoFactura = totalIva > 0 ? totalIva : totalFactura > 0 ? totalFactura : subtotal;
-        porProv[prov].total+= montoFactura;
+        porProv[prov].total+= totalIva>0?totalIva:totalFactura>0?totalFactura:subtotal;
         facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,subtotalAcum:0,productos:[]};
       }
-      if(facturasAgrupadas[key]){
-        facturasAgrupadas[key].subtotalAcum+=subtotal;
-      }
-      if(facturasAgrupadas[key]){
-        facturasAgrupadas[key].productos.push({
-          producto:r[2]||'',cantidad:r[3]||'',unidad:r[4]||'',
-          precioUnit:r[7]||'',subtotal:r[8]||''
-        });
-      }
+      if(facturasAgrupadas[key]){ facturasAgrupadas[key].subtotalAcum+=subtotal; }
+      if(facturasAgrupadas[key]){ facturasAgrupadas[key].productos.push({producto:r[2]||'',cantidad:r[3]||'',unidad:r[4]||'',precioUnit:r[7]||'',subtotal:r[8]||''}); }
     });
-
-    const porProvFinal = {};
-    Object.values(facturasAgrupadas).forEach(f => {
-      if (!porProvFinal[f.prov]) porProvFinal[f.prov] = {total:0, count:0};
-      porProvFinal[f.prov].total += f.totalIva > 0 ? f.totalIva : f.subtotalAcum;
+    const porProvFinal={};
+    Object.values(facturasAgrupadas).forEach(f=>{
+      if(!porProvFinal[f.prov])porProvFinal[f.prov]={total:0,count:0};
+      porProvFinal[f.prov].total+=f.totalIva>0?f.totalIva:f.subtotalAcum;
       porProvFinal[f.prov].count++;
     });
     const list=Object.entries(porProvFinal).sort((a,b)=>b[1].total-a[1].total);
     const totalG=list.reduce((s,[,v])=>s+v.total,0);
     const totalFacturas=facturasUnicas.size;
-
     document.getElementById('provTotal').textContent=totalG>0?fmt(totalG):'—';
     document.getElementById('provCount').textContent=totalFacturas;
     document.getElementById('provTop').textContent=(list[0]?.[0]||'—').split(' ')[0];
     document.getElementById('provProm').textContent=totalFacturas>0&&totalG>0?fmt(totalG/totalFacturas):'—';
-
     const maxP=list[0]?.[1].total||1;
     document.getElementById('gastosContainer').innerHTML=list.length>0?list.map(([prov,data])=>`
       <div class="bar-row">
         <div class="bar-label">${prov.substring(0,14)}</div>
         <div class="bar-track"><div class="bar-fill a" style="width:${data.total/maxP*100}%"></div></div>
         <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${data.total>0?fmt(data.total):data.count+' items'}</div>
-      </div>
-    `).join(''):'<div class="empty">Sin facturas</div>';
-
-    const hoy = new Date();
-    const fechaHoy = `${hoy.getDate().toString().padStart(2,'0')}/${(hoy.getMonth()+1).toString().padStart(2,'0')}/${hoy.getFullYear()}`;
-    const facturasHoy = Object.values(facturasAgrupadas).filter(f => f.fecha === fechaHoy);
-    const ultimasFacturas = facturasHoy.length > 0 ? facturasHoy : Object.values(facturasAgrupadas).reverse().slice(0,8);
-    const tituloFacturas = facturasHoy.length > 0 ? `Hoy (${fechaHoy})` : 'Últimas facturas';
-
+      </div>`).join(''):'<div class="empty">Sin facturas</div>';
+    const hoy=new Date();
+    const fechaHoy=`${hoy.getDate().toString().padStart(2,'0')}/${(hoy.getMonth()+1).toString().padStart(2,'0')}/${hoy.getFullYear()}`;
+    const facturasHoy=Object.values(facturasAgrupadas).filter(f=>f.fecha===fechaHoy);
+    const ultimasFacturas=facturasHoy.length>0?facturasHoy:Object.values(facturasAgrupadas).reverse().slice(0,8);
+    const tituloFacturas=facturasHoy.length>0?`Hoy (${fechaHoy})`:'Últimas facturas';
     document.getElementById('facturasContainer').innerHTML=`
       <div style="font-size:11px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">${tituloFacturas}</div>
       <table class="dt">
@@ -581,31 +519,19 @@ async function loadProv() {
             <td class="r" style="font-size:11px;color:var(--muted)">${f.productos.length}</td>
             <td class="r" style="font-size:11px">${f.totalIva>0?fmt(f.total):fmt(f.subtotalAcum)}</td>
             <td class="r" style="font-size:11px;color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):'—'}</td>
-          </tr>
-        `).join('')}
+          </tr>`).join('')}
         <tr style="border-top:1px solid var(--border)">
-          <td style="font-size:11px;font-weight:600;padding-top:10px">TOTAL DÍA</td>
-          <td></td>
+          <td style="font-size:11px;font-weight:600;padding-top:10px">TOTAL DÍA</td><td></td>
           <td class="r" style="font-size:11px;font-weight:600;padding-top:10px">${fmt(ultimasFacturas.reduce((s,f)=>s+(f.totalIva>0?f.total:f.subtotalAcum),0))}</td>
           <td class="r" style="font-size:11px;font-weight:600;padding-top:10px;color:var(--accent)">${fmt(ultimasFacturas.reduce((s,f)=>s+(f.totalIva>0?f.totalIva:0),0)||null)}</td>
-        </tr>
-        </tbody>
-      </table>
-    `;
-
-    const provSelect = document.getElementById('provSelect');
-    const currentVal = provSelect.value;
-    provSelect.innerHTML = '<option value="">— Seleccioná un proveedor —</option>';
-    list.forEach(([prov])=>{
-      const opt = document.createElement('option');
-      opt.value = prov;
-      opt.textContent = prov;
-      provSelect.appendChild(opt);
-    });
-    if(currentVal) provSelect.value = currentVal;
-
-    window._facturasAgrupadas = facturasAgrupadas;
-
+        </tr></tbody>
+      </table>`;
+    const provSelect=document.getElementById('provSelect');
+    const currentVal=provSelect.value;
+    provSelect.innerHTML='<option value="">— Seleccioná un proveedor —</option>';
+    list.forEach(([prov])=>{ const opt=document.createElement('option'); opt.value=prov; opt.textContent=prov; provSelect.appendChild(opt); });
+    if(currentVal) provSelect.value=currentVal;
+    window._facturasAgrupadas=facturasAgrupadas;
   } catch(e) {
     document.getElementById('gastosContainer').innerHTML='<div class="empty">Configurar API key de Google</div>';
     document.getElementById('facturasContainer').innerHTML='<div class="empty">Configurar API key de Google</div>';
@@ -614,38 +540,20 @@ async function loadProv() {
 }
 
 function renderDetalleProveedor() {
-  const prov = document.getElementById('provSelect').value;
-  if (!prov) {
-    document.getElementById('detalleProvContainer').innerHTML='<div class="empty">Seleccioná un proveedor para ver el detalle</div>';
-    return;
-  }
-
-  const mesVal = document.getElementById('monthSelect').value;
-  const partes = mesVal.split('_');
-  const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
-  const mesNum = mesesMap[partes[0]] || '';
-  const anio = partes[1] ? partes[1].slice(-2) : '';
-
-  const agrupadas = window._facturasAgrupadas || {};
-  const facturasDelProv = Object.values(agrupadas)
-    .filter(f => {
-      if (f.prov !== prov) return false;
-      if (mesNum && f.fecha) {
-        const partesFecha = f.fecha.split('/');
-        if (partesFecha.length === 3) {
-          return partesFecha[1] === mesNum && partesFecha[2].slice(-2) === anio;
-        }
-      }
-      return true;
-    })
-    .sort((a,b) => b.fecha.localeCompare(a.fecha));
-
-  if (!facturasDelProv.length) {
-    document.getElementById('detalleProvContainer').innerHTML='<div class="empty">Sin facturas para este proveedor</div>';
-    return;
-  }
-
-  document.getElementById('detalleProvContainer').innerHTML = facturasDelProv.map(f=>`
+  const prov=document.getElementById('provSelect').value;
+  if (!prov){document.getElementById('detalleProvContainer').innerHTML='<div class="empty">Seleccioná un proveedor para ver el detalle</div>';return;}
+  const mesVal=document.getElementById('monthSelect').value;
+  const partes=mesVal.split('_');
+  const mesesMap={ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+  const mesNum=mesesMap[partes[0]]||''; const anio=partes[1]?partes[1].slice(-2):'';
+  const agrupadas=window._facturasAgrupadas||{};
+  const facturasDelProv=Object.values(agrupadas).filter(f=>{
+    if(f.prov!==prov)return false;
+    if(mesNum&&f.fecha){const pf=f.fecha.split('/');if(pf.length===3)return pf[1]===mesNum&&pf[2].slice(-2)===anio;}
+    return true;
+  }).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  if (!facturasDelProv.length){document.getElementById('detalleProvContainer').innerHTML='<div class="empty">Sin facturas para este proveedor</div>';return;}
+  document.getElementById('detalleProvContainer').innerHTML=facturasDelProv.map(f=>`
     <div style="margin-bottom:24px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">
         <div>
@@ -659,309 +567,250 @@ function renderDetalleProveedor() {
       </div>
       <table class="dt">
         <thead><tr><th>Producto</th><th style="text-align:right">Cantidad</th><th style="text-align:right">P. Unitario</th><th style="text-align:right">Subtotal</th></tr></thead>
-        <tbody>
-          ${f.productos.map(p=>`
-            <tr>
-              <td style="font-size:12px">${p.producto}</td>
-              <td class="r" style="font-size:12px">${p.cantidad} ${p.unidad}</td>
-              <td class="r" style="font-size:12px;color:var(--muted)">${p.precioUnit?fmt(pNum(p.precioUnit)):'—'}</td>
-              <td class="r" style="font-size:12px;color:var(--accent)">${p.subtotal?fmt(pNum(p.subtotal)):'—'}</td>
-            </tr>
-          `).join('')}
+        <tbody>${f.productos.map(p=>`
+          <tr>
+            <td style="font-size:12px">${p.producto}</td>
+            <td class="r" style="font-size:12px">${p.cantidad} ${p.unidad}</td>
+            <td class="r" style="font-size:12px;color:var(--muted)">${p.precioUnit?fmt(pNum(p.precioUnit)):'—'}</td>
+            <td class="r" style="font-size:12px;color:var(--accent)">${p.subtotal?fmt(pNum(p.subtotal)):'—'}</td>
+          </tr>`).join('')}
         </tbody>
       </table>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 // ── STOCK ──
 async function loadStock() {
   document.getElementById('lastUpdate').textContent='Actualizando...';
 
-  // Carnes — buscar última semana con datos
+  // Carnes
   try {
-    let stockRows = null;
-    for (let sem = 5; sem >= 1; sem--) {
+    let stockRows=null;
+    for (let sem=5;sem>=1;sem--) {
       try {
-        const r = await fetchSheet(getSheetOps(), `SEMANA ${sem}!A1:H95`);
-        const tieneDatos = r.some(row => row[0] === 'TOTAL' && row.slice(1).some(v => parseFloat(v) > 0));
-        if (tieneDatos) { stockRows = r; break; }
-      } catch(e) { continue; }
+        const r=await fetchSheet(getSheetOps(),`SEMANA ${sem}!A1:H95`);
+        const tieneDatos=r.some(row=>row[0]==='TOTAL'&&row.slice(1).some(v=>parseFloat(v)>0));
+        if (tieneDatos){stockRows=r;break;}
+      } catch(e){continue;}
     }
-
-    if (!stockRows) throw new Error('Sin datos de semanas');
-
-    const productoStock = {};
-    const productoNames = ['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','MILA GROSA','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
-
-    productoNames.forEach(nombre => {
-      for (let i=0; i<stockRows.length; i++) {
-        if (stockRows[i][0] && stockRows[i][0].trim() === nombre) {
-          for (let j=i+1; j<Math.min(i+8, stockRows.length); j++) {
-            if (stockRows[j][0] === 'TOTAL') {
-              const vals = stockRows[j].slice(1,8).filter(v => v !== '' && v !== undefined && parseFloat(v) > 0);
-              productoStock[nombre] = vals.length > 0 ? parseFloat(vals[vals.length-1]) : 0;
-              break;
+    if (!stockRows) throw new Error('Sin datos');
+    const productoStock={};
+    const productoNames=['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','MILA GROSA','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    productoNames.forEach(nombre=>{
+      for (let i=0;i<stockRows.length;i++){
+        if (stockRows[i][0]&&stockRows[i][0].trim()===nombre){
+          for (let j=i+1;j<Math.min(i+8,stockRows.length);j++){
+            if (stockRows[j][0]==='TOTAL'){
+              const vals=stockRows[j].slice(1,8).filter(v=>v!==''&&v!==undefined&&parseFloat(v)>0);
+              productoStock[nombre]=vals.length>0?parseFloat(vals[vals.length-1]):0; break;
             }
           }
           break;
         }
       }
     });
-
-    const carnes = ['OJO','LOMO','BONDIOLA','MATAMBRE'];
-    const milanesas = ['MILA CARTA','MILA MENU','MILA GROSA','SUPREMA'];
-    const otros = ['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
-
-    const renderGrupo = (titulo, lista) => `
+    const carnes=['OJO','LOMO','BONDIOLA','MATAMBRE'];
+    const milanesas=['MILA CARTA','MILA MENU','MILA GROSA','SUPREMA'];
+    const otros=['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    const renderGrupo=(titulo,lista)=>`
       <div class="card">
         <div class="card-title"><span>▸</span> ${titulo}</div>
-        ${lista.map(p => {
-          const stock = productoStock[p] || 0;
-          const low = stock < 10;
-          return `<div class="stock-item">
-            <div class="dot ${low?'low':'ok'}"></div>
-            <div class="stock-name">${p}</div>
-            <div class="stock-val">${stock} u</div>
-          </div>`;
-        }).join('')}
-      </div>
-    `;
+        ${lista.map(p=>{const stock=productoStock[p]||0;const low=stock<10;return `<div class="stock-item"><div class="dot ${low?'low':'ok'}"></div><div class="stock-name">${p}</div><div class="stock-val">${stock} u</div></div>`;}).join('')}
+      </div>`;
+    document.getElementById('stockCarnes').innerHTML=renderGrupo('Carnes',carnes)+renderGrupo('Milanesas',milanesas)+renderGrupo('Otros',otros);
+  } catch(e){renderStockEjemplo();}
 
-    document.getElementById('stockCarnes').innerHTML =
-      renderGrupo('Carnes', carnes) +
-      renderGrupo('Milanesas', milanesas) +
-      renderGrupo('Otros', otros);
-
-  } catch(e) {
-    renderStockEjemplo();
-  }
-
-  // Secos/almacén
+  // Secos
   try {
-    const rows = await fetchSheet(SHEET_PROV, 'Stock!A2:G500');
-    const items = rows.filter(r => r[0]);
-
-    const categoriaMap = [
-      { cat: '🧺 Almacén', keys: ['emporio'] },
-      { cat: '🧀 Fiambres y Lácteos', keys: ['molier', 'moliere', 'provoleta', 'serenisima'] },
-      { cat: '🍦 Helados', keys: ['helados', 'eduardo'] },
-      { cat: '🍟 Congelados', keys: ['nessuno', 'bibione'] },
-      { cat: '🧹 Limpieza', keys: ['lustrol'] },
-      { cat: '📦 Papelería y Descartables', keys: ['julian', 'papelera', 'terracina'] },
+    const rows=await fetchSheet(SHEET_PROV,'Stock!A2:G500');
+    const items=rows.filter(r=>r[0]);
+    const categoriaMap=[
+      {cat:'🧺 Almacén',keys:['emporio']},
+      {cat:'🧀 Fiambres y Lácteos',keys:['molier','moliere','provoleta','serenisima']},
+      {cat:'🍦 Helados',keys:['helados','eduardo','funes']},
+      {cat:'🍟 Congelados',keys:['nessuno','bibione']},
+      {cat:'🧹 Limpieza',keys:['lustrol']},
+      {cat:'📦 Papelería y Descartables',keys:['julian','papelera','terracina']},
     ];
-
-    function getCategoria(proveedor) {
-      const norm = (proveedor || '').toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      for (const { cat, keys } of categoriaMap) {
-        if (keys.some(k => norm.includes(k))) return cat;
-      }
+    function getCategoria(proveedor){
+      const norm=(proveedor||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      for (const {cat,keys} of categoriaMap){if(keys.some(k=>norm.includes(k)))return cat;}
       return null;
     }
-
-    const porCategoria = {};
-    items.forEach(r => {
-      const cat = getCategoria(r[1]);
-      if (!cat) return;
-      if (!porCategoria[cat]) porCategoria[cat] = [];
-      porCategoria[cat].push({
-        producto: r[0],
-        unidad: r[2] || '',
-        actual: parseFloat(r[3]) || 0,
-        minimo: parseFloat(r[4]) || 0
-      });
+    const porCategoria={};
+    items.forEach(r=>{
+      const cat=getCategoria(r[1]);
+      if(!cat)return;
+      if(!porCategoria[cat])porCategoria[cat]=[];
+      porCategoria[cat].push({producto:r[0],unidad:r[2]||'',actual:parseFloat(r[3])||0,minimo:parseFloat(r[4])||0});
     });
-
-    document.getElementById('stockGrid').innerHTML = Object.entries(porCategoria).map(([cat, items]) => `
+    document.getElementById('stockGrid').innerHTML=Object.entries(porCategoria).map(([cat,items])=>`
       <div class="card">
         <div class="card-title"><span>▸</span> ${cat}</div>
-        ${items.map(item => `
-          <div class="stock-item">
-            <div class="dot ${item.actual <= item.minimo ? 'low' : 'ok'}"></div>
-            <div class="stock-name">${item.producto}</div>
-            <div class="stock-val">${item.actual} ${item.unidad}</div>
-          </div>
-        `).join('')}
-      </div>
-    `).join('');
+        ${items.map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} ${item.unidad}</div></div>`).join('')}
+      </div>`).join('');
+  } catch(e){renderStockEjemplo();}
 
-  } catch(e) {
-    renderStockEjemplo();
-  }
-
-  // Vinos
+  // Vinos stock
   try {
-    const rowsVinos = await fetchSheet(SHEET_PROV, 'Stock Vinos!A2:G200');
-    const vinosItems = rowsVinos.filter(r => r[0]);
+    const rowsVinos=await fetchSheet(SHEET_PROV,'Stock Vinos!A2:G200');
+    const vinosItems=rowsVinos.filter(r=>r[0]);
+    const ordenTipos=['Tinto','Espumante','Blanco','Rosado','Dulce'];
+    const etiquetas={'Tinto':'🍷 Tintos','Espumante':'🥂 Espumantes','Blanco':'🍾 Blancos','Rosado':'🌸 Rosados','Dulce':'🍯 Dulces'};
+    const porTipo={};
+    vinosItems.forEach(r=>{
+      const tipo=r[1]||'Otros';
+      if(!porTipo[tipo])porTipo[tipo]=[];
+      porTipo[tipo].push({producto:r[0],actual:parseFloat(r[3])||0,minimo:parseFloat(r[4])||0});
+    });
+    document.getElementById('stockVinos').innerHTML=ordenTipos.filter(tipo=>porTipo[tipo]&&porTipo[tipo].length>0).map(tipo=>`
+      <div class="card">
+        <div class="card-title"><span>▸</span> ${etiquetas[tipo]}</div>
+        ${porTipo[tipo].map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} bot</div></div>`).join('')}
+      </div>`).join('');
+  } catch(e){document.getElementById('stockVinos').innerHTML='<div class="empty">Sin datos de vinos</div>';}
 
-    const ordenTipos = ['Tinto', 'Espumante', 'Blanco', 'Rosado', 'Dulce'];
-    const etiquetas = {
-      'Tinto': '🍷 Tintos',
-      'Espumante': '🥂 Espumantes',
-      'Blanco': '🍾 Blancos',
-      'Rosado': '🌸 Rosados',
-      'Dulce': '🍯 Dulces',
-    };
+  // Movimientos de vinos
+  try {
+    const mesVal=document.getElementById('monthSelect').value;
+    const partesMes=mesVal.split('_');
+    const mesesMap={ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+    const mesNum=mesesMap[partesMes[0]]||'';
+    const anioCorto=partesMes[1]?partesMes[1].slice(-2):'';
+    const mesLabel=mesVal.replace('_',' ').replace('2026','2026');
 
-    const porTipo = {};
-    vinosItems.forEach(r => {
-      const tipo = r[1] || 'Otros';
-      if (!porTipo[tipo]) porTipo[tipo] = [];
-      porTipo[tipo].push({
-        producto: r[0],
-        actual: parseFloat(r[3]) || 0,
-        minimo: parseFloat(r[4]) || 0
-      });
+    const rowsMov=await fetchSheet(SHEET_PROV,'MOVIMIENTOS VINOS!A2:F2000');
+    const movFiltrados=rowsMov.filter(r=>{
+      if(!r[0]||!r[1])return false;
+      const mes=(r[1]||'').toLowerCase();
+      const mesNombre=partesMes[0].charAt(0)+partesMes[0].slice(1).toLowerCase();
+      return mes.includes(mesNombre.toLowerCase());
     });
 
-    document.getElementById('stockVinos').innerHTML = ordenTipos
-      .filter(tipo => porTipo[tipo] && porTipo[tipo].length > 0)
-      .map(tipo => `
-        <div class="card">
-          <div class="card-title"><span>▸</span> ${etiquetas[tipo]}</div>
-          ${porTipo[tipo].map(item => `
-            <div class="stock-item">
-              <div class="dot ${item.actual <= item.minimo ? 'low' : 'ok'}"></div>
-              <div class="stock-name">${item.producto}</div>
-              <div class="stock-val">${item.actual} bot</div>
-            </div>
-          `).join('')}
-        </div>
-      `).join('');
+    // Agrupar por producto
+    const porProducto={};
+    movFiltrados.forEach(r=>{
+      const producto=(r[3]||'').trim();
+      const tipo=(r[4]||'').trim().toUpperCase();
+      const cantidad=parseFloat(r[5])||0;
+      if(!producto)return;
+      if(!porProducto[producto])porProducto[producto]={entradas:0,salidas:0};
+      if(tipo==='ENTRADA')porProducto[producto].entradas+=cantidad;
+      if(tipo==='SALIDA')porProducto[producto].salidas+=cantidad;
+    });
 
+    // Obtener stock actual de Stock Vinos
+    const rowsStockVinos=await fetchSheet(SHEET_PROV,'Stock Vinos!A2:G200');
+    const stockVinosMap={};
+    rowsStockVinos.filter(r=>r[0]).forEach(r=>{ stockVinosMap[r[0].trim()]=parseFloat(r[3])||0; });
+
+    const productos=Object.entries(porProducto);
+    const totalEntradas=productos.reduce((s,[,v])=>s+v.entradas,0);
+    const totalSalidas=productos.reduce((s,[,v])=>s+v.salidas,0);
+    let totalMerma=0;
+
+    // KPIs
+    document.getElementById('vinosKpis').innerHTML=`
+      <div class="kpi-card"><div class="kpi-label">Total Entradas</div><div class="kpi-value">${Math.round(totalEntradas)}</div><div class="kpi-sub">botellas en el mes</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total Salidas</div><div class="kpi-value">${Math.round(totalSalidas)}</div><div class="kpi-sub">botellas vendidas</div></div>
+      <div class="kpi-card"><div class="kpi-label">Stock Actual</div><div class="kpi-value">${Math.round(Object.values(stockVinosMap).reduce((s,v)=>s+v,0))}</div><div class="kpi-sub">botellas en depósito</div></div>
+      <div class="kpi-card"><div class="kpi-label" id="vinosMermaLabel">Merma Total</div><div class="kpi-value" id="vinosMermaVal">—</div><div class="kpi-sub">botellas sin explicación</div></div>`;
+
+    // Top 5 más vendidos
+    const top5=productos.filter(([,v])=>v.salidas>0).sort((a,b)=>b[1].salidas-a[1].salidas).slice(0,5);
+    if (top5.length>0) {
+      const maxS=top5[0][1].salidas;
+      document.getElementById('vinosTopContainer').innerHTML=top5.map(([prod,v])=>`
+        <div class="bar-row">
+          <div class="bar-label" style="width:200px">${prod}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${v.salidas/maxS*100}%;background:#9b59b6"></div></div>
+          <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${Math.round(v.salidas)} bot</div>
+        </div>`).join('');
+    } else {
+      document.getElementById('vinosTopContainer').innerHTML='<div class="empty">Sin datos de ventas para este mes</div>';
+    }
+
+    // Tabla movimientos
+    if (productos.length>0) {
+      let mermaTotal=0;
+      const filas=productos.map(([prod,v])=>{
+        const stockActual=stockVinosMap[prod]||0;
+        const merma=v.entradas-v.salidas-stockActual;
+        const mermaReal=merma>0?merma:0;
+        mermaTotal+=mermaReal;
+        const estado=mermaReal>0?`<span class="badge-warn">⚠ Revisar</span>`:`<span class="badge-ok">✓ OK</span>`;
+        return `<tr>
+          <td style="font-size:12px">${prod}</td>
+          <td class="r" style="font-size:12px;color:var(--green)">${Math.round(v.entradas)}</td>
+          <td class="r" style="font-size:12px;color:var(--accent)">${Math.round(v.salidas)}</td>
+          <td class="r" style="font-size:12px">${Math.round(stockActual)}</td>
+          <td class="r" style="font-size:12px;color:${mermaReal>0?'var(--red)':'var(--muted)'}">${Math.round(mermaReal)}</td>
+          <td class="r">${estado}</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('vinosMermaVal').textContent=Math.round(mermaTotal);
+
+      document.getElementById('vinosMovContainer').innerHTML=`
+        <table class="dt">
+          <thead><tr>
+            <th style="width:35%">Vino</th>
+            <th style="text-align:right">Entradas</th>
+            <th style="text-align:right">Salidas</th>
+            <th style="text-align:right">Stock</th>
+            <th style="text-align:right">Merma</th>
+            <th style="text-align:right">Estado</th>
+          </tr></thead>
+          <tbody>${filas}</tbody>
+        </table>`;
+    } else {
+      document.getElementById('vinosMovContainer').innerHTML='<div class="empty">Sin movimientos para este mes</div>';
+      document.getElementById('vinosTopContainer').innerHTML='<div class="empty">Sin datos de ventas para este mes</div>';
+    }
   } catch(e) {
-    document.getElementById('stockVinos').innerHTML = '<div class="empty">Sin datos de vinos</div>';
+    document.getElementById('vinosMovContainer').innerHTML='<div class="empty">Sin datos de movimientos</div>';
+    document.getElementById('vinosTopContainer').innerHTML='<div class="empty">Sin datos</div>';
+    document.getElementById('vinosKpis').innerHTML='<div class="empty" style="grid-column:1/-1">Sin datos de movimientos</div>';
   }
 
-  document.getElementById('lastUpdate').textContent = `${new Date().toLocaleTimeString('es-AR')}`;
+  document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
 }
 
-// ── EJEMPLO SIN API KEY ──
 function renderEjemplo() {
   document.getElementById('kpiGrid').innerHTML=`
     <div class="kpi-card"><div class="kpi-label">💰 Facturación Total</div><div class="kpi-value">$59,5M</div><div class="kpi-sub">Marzo 2026</div></div>
     <div class="kpi-card"><div class="kpi-label">👥 Cubiertos Totales</div><div class="kpi-value">1.864</div><div class="kpi-sub">en el mes</div></div>
     <div class="kpi-card"><div class="kpi-label">📊 Promedio x Cubierto</div><div class="kpi-value">$26.3K</div><div class="kpi-sub">por cubierto</div></div>
-    <div class="kpi-card"><div class="kpi-label">📈 VS Febrero</div><div class="kpi-value">—</div></div>
-  `;
-  const sems=[{label:'Sem 2-8',fact:59523018,cubs:1864},{label:'Sem 9-15',fact:0,cubs:0},{label:'Sem 16-22',fact:0,cubs:0},{label:'Sem 23-29',fact:0,cubs:0}];
-  const maxS=59523018;
-  document.getElementById('semanasContainer').innerHTML=sems.map(s=>`
-    <div class="sem-row">
-      <div class="sem-label">${s.label}</div>
-      <div class="sem-wrap"><div class="sem-track"><div class="sem-fill" style="width:${s.fact/maxS*100}%"></div></div><div class="sem-cubs">${s.cubs>0?fmtN(s.cubs)+' cubiertos':'sin datos'}</div></div>
-      <div class="sem-val">${s.fact>0?fmt(s.fact):'—'}</div>
-    </div>
-  `).join('');
-  const cans=[{nombre:'🛵 Rappi',total:5131600},{nombre:'🛵 Pedidos Ya!',total:2973300},{nombre:'🧾 Mozo Mostrador',total:2049801},{nombre:'📱 MP Delivery',total:148700}];
-  const maxC=5131600;const colC=['a','b','g','a'];
-  document.getElementById('canalesContainer').innerHTML=cans.map((c,i)=>`
-    <div class="bar-row"><div class="bar-label">${c.nombre}</div><div class="bar-track"><div class="bar-fill ${colC[i]}" style="width:${c.total/maxC*100}%"></div></div><div class="bar-val">${fmt(c.total)}</div></div>
-  `).join('');
-  const mozos=[{nombre:'Nicolás',total:6933204,cubs:239},{nombre:'Nora',total:6204410,cubs:196},{nombre:'Martín',total:6119322,cubs:195},{nombre:'Juan',total:5400918,cubs:227},{nombre:'Adrián',total:5617026,cubs:252},{nombre:'Sofía',total:5159233,cubs:217},{nombre:'Silvia',total:5072210,cubs:170},{nombre:'Rodrigo',total:5062416,cubs:175},{nombre:'Luis',total:3650879,cubs:182}].sort((a,b)=>b.total-a.total);
-  const maxM=mozos[0].total;const rks=['g1','g2','g3'];
-  document.getElementById('mozosContainer').innerHTML=mozos.map((m,i)=>`
-    <div class="bar-row" style="margin-bottom:16px">
-      <div style="width:26px;flex-shrink:0"><span class="rn ${rks[i]||''}">${i+1}</span></div>
-      <div style="width:110px;flex-shrink:0"><div class="bar-label">${m.nombre}</div><div class="bar-sub">${fmtN(m.cubs)} cub.</div></div>
-      <div class="bar-track" style="height:9px"><div class="bar-fill a" style="width:${m.total/maxM*100}%"></div></div>
-      <div class="bar-val">${fmt(m.total)}</div>
-    </div>
-  `).join('');
-
-  const stockCarnes = {
-    'Carnes': [{n:'Ojo de bife',s:44,l:false},{n:'Lomo',s:18,l:false},{n:'Bondiola',s:96,l:false},{n:'Matambre',s:12,l:false}],
-    'Milanesas': [{n:'Mila Carta',s:149,l:false},{n:'Mila Menú',s:50,l:false},{n:'Suprema',s:33,l:false}],
-    'Otros': [{n:'Salmón',s:5,l:true},{n:'Churrasquito cerdo',s:10,l:false},{n:'Empanadas carne',s:14,l:true},{n:'Empanadas JyQ',s:93,l:false}],
-  };
-  document.getElementById('stockCarnes').innerHTML = Object.entries(stockCarnes).map(([grupo, items]) => `
-    <div class="card">
-      <div class="card-title"><span>▸</span> ${grupo}</div>
-      ${items.map(item => `
-        <div class="stock-item">
-          <div class="dot ${item.l?'low':'ok'}"></div>
-          <div class="stock-name">${item.n}</div>
-          <div class="stock-val">${item.s} u</div>
-        </div>
-      `).join('')}
-    </div>
-  `).join('');
-
-  const stockSecos = {
-    'El Emporio': [{p:'Pack azúcar',a:3,m:2},{p:'Latas tomate',a:8,m:10},{p:'Harina',a:2,m:5},{p:'Café en grano',a:3,m:2}],
-    'Molier': [{p:'Mozzarella',a:4,m:3},{p:'Jamón cocido',a:1,m:2},{p:'Panceta',a:3,m:2}],
-    'Lustrol': [{p:'Detergente 5l',a:3,m:2},{p:'Lavandina 5l',a:1,m:2},{p:'Desengrasante',a:2,m:1}],
-    'Papelera Julián': [{p:'Servilletas',a:5,m:3},{p:'Bandejas 103',a:2,m:2},{p:'Bolsas camiseta',a:4,m:2}],
-  };
-  document.getElementById('stockGrid').innerHTML = Object.entries(stockSecos).map(([prov, items]) => `
-    <div class="card">
-      <div class="card-title"><span>▸</span> ${prov}</div>
-      ${items.map(item => `
-        <div class="stock-item">
-          <div class="dot ${item.a<=item.m?'low':'ok'}"></div>
-          <div class="stock-name">${item.p}</div>
-          <div class="stock-val">${item.a}</div>
-        </div>
-      `).join('')}
-    </div>
-  `).join('');
+    <div class="kpi-card"><div class="kpi-label">📈 VS Febrero</div><div class="kpi-value">—</div></div>`;
 }
 
 function renderStockEjemplo() {
-  const stockCarnes = [
+  const stockCarnes=[
     {n:'Ojo de bife',s:44,l:false},{n:'Lomo',s:18,l:false},{n:'Bondiola',s:96,l:false},{n:'Matambre',s:12,l:false},
     {n:'Mila Carta',s:149,l:false},{n:'Mila Menú',s:50,l:false},{n:'Suprema',s:33,l:false},
     {n:'Salmón',s:5,l:true},{n:'Churrasquito cerdo',s:10,l:false},{n:'Empanadas carne',s:14,l:true},{n:'Empanadas JyQ',s:93,l:false},
   ];
-  document.getElementById('stockCarnes').innerHTML = `
+  document.getElementById('stockCarnes').innerHTML=`
     <div class="card" style="grid-column:1/-1">
       <div class="card-title"><span>▸</span> Productos Elaborados</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0 24px">
-        ${stockCarnes.map(i => `<div class="stock-item"><div class="dot ${i.l?'low':'ok'}"></div><div class="stock-name">${i.n}</div><div class="stock-val">${i.s} u</div></div>`).join('')}
+        ${stockCarnes.map(i=>`<div class="stock-item"><div class="dot ${i.l?'low':'ok'}"></div><div class="stock-name">${i.n}</div><div class="stock-val">${i.s} u</div></div>`).join('')}
       </div>
-    </div>
-  `;
-  const stockSecos = {
-    'El Emporio': [{p:'Pack azúcar',a:3,m:2},{p:'Latas tomate',a:8,m:10},{p:'Harina',a:2,m:5},{p:'Café en grano',a:3,m:2}],
-    'Molier': [{p:'Mozzarella',a:4,m:3},{p:'Jamón cocido',a:1,m:2},{p:'Panceta',a:3,m:2}],
-    'Lustrol': [{p:'Detergente 5l',a:3,m:2},{p:'Lavandina 5l',a:1,m:2},{p:'Desengrasante',a:2,m:1}],
-    'Papelera Julián': [{p:'Servilletas',a:5,m:3},{p:'Bandejas 103',a:2,m:2},{p:'Bolsas camiseta',a:4,m:2}],
-  };
-  document.getElementById('stockGrid').innerHTML = Object.entries(stockSecos).map(([prov, items]) => `
-    <div class="card">
-      <div class="card-title"><span>▸</span> ${prov}</div>
-      ${items.map(i => `<div class="stock-item"><div class="dot ${i.a<=i.m?'low':'ok'}"></div><div class="stock-name">${i.p}</div><div class="stock-val">${i.a}</div></div>`).join('')}
-    </div>
-  `).join('');
+    </div>`;
 }
 
 loadOps();
 </script>
 
 <button id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="
-  display:none;
-  position:fixed;
-  bottom:28px;
-  right:28px;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.15);
-  color:var(--muted);
-  font-size:18px;
-  font-weight:700;
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  cursor:pointer;
-  z-index:999;
-  backdrop-filter:blur(4px);
+  display:none; position:fixed; bottom:28px; right:28px;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+  color:var(--muted); font-size:18px; font-weight:700;
+  width:44px; height:44px; border-radius:50%; cursor:pointer; z-index:999; backdrop-filter:blur(4px);
 ">↑</button>
 <script>
-  const topBtn = document.getElementById('topBtn');
-  window.addEventListener('scroll', () => {
-    topBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-  });
+  const topBtn=document.getElementById('topBtn');
+  window.addEventListener('scroll',()=>{ topBtn.style.display=window.scrollY>300?'block':'none'; });
 </script>
-
 </body>
 </html>
