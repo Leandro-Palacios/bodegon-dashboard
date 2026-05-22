@@ -169,9 +169,22 @@
   .badge-ok { background:rgba(77,184,122,0.15); color:var(--green); font-size:11px; padding:2px 8px; border-radius:4px; }
   .badge-warn { background:rgba(224,82,82,0.15); color:var(--red); font-size:11px; padding:2px 8px; border-radius:4px; }
 
+  /* Semanas vinos */
+  .vino-sem-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px; }
+  .vino-sem-card { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:14px; text-align:center; }
+  .vino-sem-titulo { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+  .vino-sem-fila { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; }
+  .vino-sem-fila:last-child { margin-bottom:0; }
+  .vino-sem-label { color:var(--muted); }
+  .vino-sem-val { font-weight:600; }
+  .vino-sem-val.ing { color:var(--blue); }
+  .vino-sem-val.ven { color:var(--accent); }
+  .vino-sem-val.stk { color:var(--green); }
+
   @media(max-width:900px) {
     .kpi-grid { grid-template-columns:repeat(2,1fr); }
     .g2,.g3 { grid-template-columns:1fr; }
+    .vino-sem-grid { grid-template-columns:repeat(2,1fr); }
     .main { padding:16px; }
     .header { padding:0 16px; }
     .subheader { padding:10px 16px; flex-wrap:wrap; }
@@ -196,7 +209,7 @@
   <select class="month-select" id="monthSelect" onchange="reloadCurrent()">
     <option value="MARZO_2026">Marzo 2026</option>
     <option value="ABRIL_2026">Abril 2026</option>
-    <option value="MAYO_2026">Mayo 2026</option>
+    <option value="MAYO_2026" selected>Mayo 2026</option>
     <option value="JUNIO_2026">Junio 2026</option>
     <option value="JULIO_2026">Julio 2026</option>
     <option value="AGOSTO_2026">Agosto 2026</option>
@@ -240,6 +253,10 @@
         <div class="card-title"><span>▸</span> Merma</div>
         <div id="mermaContainer"><div class="empty">Sin datos</div></div>
       </div>
+    </div>
+    <div class="sdiv"><div class="sdiv-t">VINOS — MOVIMIENTO SEMANAL</div><div class="sdiv-l"></div></div>
+    <div class="vino-sem-grid" id="vinosSemanasOps" style="margin-bottom:14px">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
     </div>
   </div>
 
@@ -286,22 +303,19 @@
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
     </div>
 
-    <div class="sdiv"><div class="sdiv-t">VINOS</div><div class="sdiv-l"></div></div>
-    <div class="g3" id="stockVinos" style="margin-bottom:14px">
+    <div class="sdiv"><div class="sdiv-t">VINOS — RESUMEN DEL MES</div><div class="sdiv-l"></div></div>
+    <div class="kpi-grid" id="vinosKpis" style="margin-bottom:14px">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
     </div>
 
-    <div class="sdiv"><div class="sdiv-t">TOP 5 VINOS MÁS VENDIDOS</div><div class="sdiv-l"></div></div>
+    <div class="sdiv"><div class="sdiv-t">TOP 5 MÁS VENDIDOS</div><div class="sdiv-l"></div></div>
     <div class="card" style="margin-bottom:14px">
       <div id="vinosTopContainer"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
-    <div class="sdiv"><div class="sdiv-t">MOVIMIENTOS DE VINOS</div><div class="sdiv-l"></div></div>
-    <div class="kpi-grid" id="vinosKpis" style="margin-bottom:14px">
-      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
-    </div>
+    <div class="sdiv"><div class="sdiv-t">DETALLE POR VINO</div><div class="sdiv-l"></div></div>
     <div class="card">
-      <div id="vinosMovContainer"><div class="loading"><div class="spinner"></div></div></div>
+      <div id="vinosTablaContainer"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
   </div>
@@ -321,7 +335,7 @@ const SHEETS_MESES = {
   'NOVIEMBRE_2026':  '1P7a9926EoGuQQNgPFeXIIQUYdK-2fB9HPwAGJ3R4jqc',
   'DICIEMBRE_2026':  '15FisxNTYO8IFW8zfbufsnDHiq83X9JqbEbmJjD_d0Ko',
 };
-function getSheetOps() { return SHEETS_MESES[document.getElementById('monthSelect').value] || SHEETS_MESES['MARZO_2026']; }
+function getSheetOps() { return SHEETS_MESES[document.getElementById('monthSelect').value] || SHEETS_MESES['MAYO_2026']; }
 const SHEET_PROV = '1Ux55KL03zQp2m8UvSMW-x14kYX4FMyWUuIDKBrVyLus';
 const API_KEY = 'AIzaSyB02rsTd-NzUxHFc41Y5JZ5KeJ3YfpZftU';
 let currentTab = 'ops';
@@ -346,6 +360,15 @@ async function fetchSheet(id, range) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('Error');
   return (await res.json()).values || [];
+}
+
+function getMesLabel() {
+  const mesVal = document.getElementById('monthSelect').value;
+  const partes = mesVal.split('_');
+  const mesesNombre = {ENERO:'enero',FEBRERO:'febrero',MARZO:'marzo',ABRIL:'abril',MAYO:'mayo',
+    JUNIO:'junio',JULIO:'julio',AGOSTO:'agosto',SEPTIEMBRE:'septiembre',OCTUBRE:'octubre',
+    NOVIEMBRE:'noviembre',DICIEMBRE:'diciembre'};
+  return `${mesesNombre[partes[0]] || partes[0].toLowerCase()} ${partes[1]}`;
 }
 
 function switchTab(tab, btn) {
@@ -649,128 +672,133 @@ async function loadStock() {
         <div class="card-title"><span>▸</span> ${cat}</div>
         ${items.map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} ${item.unidad}</div></div>`).join('')}
       </div>`).join('');
-  } catch(e){renderStockEjemplo();}
+  } catch(e){document.getElementById('stockGrid').innerHTML='<div class="empty">Sin datos de secos</div>';}
 
-  // Vinos stock
+  // ── VINOS — nueva lógica desde MOVIMIENTOS VINOS ──
   try {
-    const rowsVinos=await fetchSheet(SHEET_PROV,'Stock Vinos!A2:G200');
-    const vinosItems=rowsVinos.filter(r=>r[0]);
-    const ordenTipos=['Tinto','Espumante','Blanco','Rosado','Dulce'];
-    const etiquetas={'Tinto':'🍷 Tintos','Espumante':'🥂 Espumantes','Blanco':'🍾 Blancos','Rosado':'🌸 Rosados','Dulce':'🍯 Dulces'};
-    const porTipo={};
-    vinosItems.forEach(r=>{
-      const tipo=r[1]||'Otros';
-      if(!porTipo[tipo])porTipo[tipo]=[];
-      porTipo[tipo].push({producto:r[0],actual:parseFloat(r[3])||0,minimo:parseFloat(r[4])||0});
-    });
-    document.getElementById('stockVinos').innerHTML=ordenTipos.filter(tipo=>porTipo[tipo]&&porTipo[tipo].length>0).map(tipo=>`
-      <div class="card">
-        <div class="card-title"><span>▸</span> ${etiquetas[tipo]}</div>
-        ${porTipo[tipo].map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} bot</div></div>`).join('')}
-      </div>`).join('');
-  } catch(e){document.getElementById('stockVinos').innerHTML='<div class="empty">Sin datos de vinos</div>';}
+    const mesLabel = getMesLabel(); // ej: "mayo 2026"
+    const rows = await fetchSheet(SHEET_PROV, 'MOVIMIENTOS VINOS!A3:U500');
 
-  // Movimientos de vinos
-  try {
-    const mesVal=document.getElementById('monthSelect').value;
-    const partesMes=mesVal.split('_');
-    const mesesMap={ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
-    const mesNum=mesesMap[partesMes[0]]||'';
-    const anioCorto=partesMes[1]?partesMes[1].slice(-2):'';
-    const mesLabel=mesVal.replace('_',' ').replace('2026','2026');
+    // Filtrar por mes (col B = índice 1)
+    const vinosMes = rows.filter(r => r[1] && r[1].toLowerCase().trim() === mesLabel.toLowerCase().trim());
 
-    const rowsMov=await fetchSheet(SHEET_PROV,'MOVIMIENTOS VINOS!A2:F2000');
-    const movFiltrados=rowsMov.filter(r=>{
-      if(!r[0]||!r[1])return false;
-      const mes=(r[1]||'').toLowerCase();
-      const mesNombre=partesMes[0].charAt(0)+partesMes[0].slice(1).toLowerCase();
-      return mes.includes(mesNombre.toLowerCase());
-    });
+    if (vinosMes.length === 0) {
+      const sinDatos = '<div class="empty">Sin datos para este mes</div>';
+      document.getElementById('vinosKpis').innerHTML = `<div class="empty" style="grid-column:1/-1">Sin datos de vinos para ${mesLabel}</div>`;
+      document.getElementById('vinosSemanasGrid').innerHTML = sinDatos;
+      document.getElementById('vinosTopContainer').innerHTML = sinDatos;
+      document.getElementById('vinosTablaContainer').innerHTML = sinDatos;
+      return;
+    }
 
-    // Agrupar por producto
-    const porProducto={};
-    movFiltrados.forEach(r=>{
-      const producto=(r[3]||'').trim();
-      const tipo=(r[4]||'').trim().toUpperCase();
-      const cantidad=parseFloat(r[5])||0;
-      if(!producto)return;
-      if(!porProducto[producto])porProducto[producto]={entradas:0,salidas:0};
-      if(tipo==='ENTRADA')porProducto[producto].entradas+=cantidad;
-      if(tipo==='SALIDA')porProducto[producto].salidas+=cantidad;
-    });
+    // Columnas (índice 0-based):
+    // 0=PRODUCTO, 1=MES, 2=STOCK_INI
+    // 3=S1ING, 4=S1VEN, 5=S1STK
+    // 6=S2ING, 7=S2VEN, 8=S2STK
+    // 9=S3ING, 10=S3VEN, 11=S3STK
+    // 12=S4ING, 13=S4VEN, 14=S4STK
+    // 15=S5ING, 16=S5VEN, 17=S5STK
+    // 18=TOT_ING, 19=TOT_VEN, 20=STK_FINAL
 
-    // Obtener stock actual de Stock Vinos
-    const rowsStockVinos=await fetchSheet(SHEET_PROV,'Stock Vinos!A2:G200');
-    const stockVinosMap={};
-    rowsStockVinos.filter(r=>r[0]).forEach(r=>{ stockVinosMap[r[0].trim()]=parseFloat(r[3])||0; });
+    const n = v => parseFloat(v) || 0;
 
-    const productos=Object.entries(porProducto);
-    const totalEntradas=productos.reduce((s,[,v])=>s+v.entradas,0);
-    const totalSalidas=productos.reduce((s,[,v])=>s+v.salidas,0);
-    let totalMerma=0;
+    // KPIs globales del mes
+    const totIng    = vinosMes.reduce((s,r) => s + n(r[18]), 0);
+    const totVen    = vinosMes.reduce((s,r) => s + n(r[19]), 0);
+    const stkFinal  = vinosMes.reduce((s,r) => s + n(r[20]), 0);
+    const stkIni    = vinosMes.reduce((s,r) => s + n(r[2]),  0);
+    const mermaTotal = Math.max(0, stkIni + totIng - totVen - stkFinal);
 
-    // KPIs
-    document.getElementById('vinosKpis').innerHTML=`
-      <div class="kpi-card"><div class="kpi-label">Total Entradas</div><div class="kpi-value">${Math.round(totalEntradas)}</div><div class="kpi-sub">botellas en el mes</div></div>
-      <div class="kpi-card"><div class="kpi-label">Total Salidas</div><div class="kpi-value">${Math.round(totalSalidas)}</div><div class="kpi-sub">botellas vendidas</div></div>
-      <div class="kpi-card"><div class="kpi-label">Stock Actual</div><div class="kpi-value">${Math.round(Object.values(stockVinosMap).reduce((s,v)=>s+v,0))}</div><div class="kpi-sub">botellas en depósito</div></div>
-      <div class="kpi-card"><div class="kpi-label" id="vinosMermaLabel">Merma Total</div><div class="kpi-value" id="vinosMermaVal">—</div><div class="kpi-sub">botellas sin explicación</div></div>`;
+    document.getElementById('vinosKpis').innerHTML = `
+      <div class="kpi-card"><div class="kpi-label">📦 Ingresos del Mes</div><div class="kpi-value">${Math.round(totIng)}</div><div class="kpi-sub">botellas ingresadas</div></div>
+      <div class="kpi-card"><div class="kpi-label">🍷 Ventas del Mes</div><div class="kpi-value">${Math.round(totVen)}</div><div class="kpi-sub">botellas vendidas</div></div>
+      <div class="kpi-card"><div class="kpi-label">📊 Stock Actual</div><div class="kpi-value">${Math.round(stkFinal)}</div><div class="kpi-sub">botellas en depósito</div></div>
+      <div class="kpi-card"><div class="kpi-label">⚠️ Merma Total</div><div class="kpi-value" style="color:${mermaTotal>0?'var(--red)':'var(--green)'}">${Math.round(mermaTotal)}</div><div class="kpi-sub">botellas sin explicación</div></div>`;
 
+    // Resumen por semana
+    const sems = [
+      {label:'Sem 1', ing:3, ven:4, stk:5},
+      {label:'Sem 2', ing:6, ven:7, stk:8},
+      {label:'Sem 3', ing:9, ven:10, stk:11},
+      {label:'Sem 4', ing:12, ven:13, stk:14},
+      {label:'Sem 5', ing:15, ven:16, stk:17},
+    ];
     // Top 5 más vendidos
-    const top5=productos.filter(([,v])=>v.salidas>0).sort((a,b)=>b[1].salidas-a[1].salidas).slice(0,5);
-    if (top5.length>0) {
-      const maxS=top5[0][1].salidas;
-      document.getElementById('vinosTopContainer').innerHTML=top5.map(([prod,v])=>`
+    const ranking = vinosMes
+      .map(r => ({nombre: r[0]||'', ventas: n(r[19])}))
+      .filter(v => v.ventas > 0)
+      .sort((a,b) => b.ventas - a.ventas)
+      .slice(0,5);
+
+    if (ranking.length > 0) {
+      const maxV = ranking[0].ventas;
+      document.getElementById('vinosTopContainer').innerHTML = ranking.map(v => `
         <div class="bar-row">
-          <div class="bar-label" style="width:200px">${prod}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${v.salidas/maxS*100}%;background:#9b59b6"></div></div>
-          <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${Math.round(v.salidas)} bot</div>
+          <div class="bar-label" style="width:220px">${v.nombre}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${v.ventas/maxV*100}%;background:#9b59b6"></div></div>
+          <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${Math.round(v.ventas)} bot</div>
         </div>`).join('');
     } else {
-      document.getElementById('vinosTopContainer').innerHTML='<div class="empty">Sin datos de ventas para este mes</div>';
+      document.getElementById('vinosTopContainer').innerHTML = '<div class="empty">Sin ventas registradas aún</div>';
     }
 
-    // Tabla movimientos
-    if (productos.length>0) {
-      let mermaTotal=0;
-      const filas=productos.map(([prod,v])=>{
-        const stockActual=stockVinosMap[prod]||0;
-        const merma=v.entradas-v.salidas-stockActual;
-        const mermaReal=merma>0?merma:0;
-        mermaTotal+=mermaReal;
-        const estado=mermaReal>0?`<span class="badge-warn">⚠ Revisar</span>`:`<span class="badge-ok">✓ OK</span>`;
-        return `<tr>
-          <td style="font-size:12px">${prod}</td>
-          <td class="r" style="font-size:12px;color:var(--green)">${Math.round(v.entradas)}</td>
-          <td class="r" style="font-size:12px;color:var(--accent)">${Math.round(v.salidas)}</td>
-          <td class="r" style="font-size:12px">${Math.round(stockActual)}</td>
-          <td class="r" style="font-size:12px;color:${mermaReal>0?'var(--red)':'var(--muted)'}">${Math.round(mermaReal)}</td>
-          <td class="r">${estado}</td>
-        </tr>`;
-      }).join('');
+    // Tabla detalle por vino
+    const filas = vinosMes.map(r => {
+      const prod      = r[0] || '';
+      const stockIni  = n(r[2]);
+      const totIngRow = n(r[18]);
+      const totVenRow = n(r[19]);
+      const stkFinalR = n(r[20]);
+      const merma     = Math.max(0, stockIni + totIngRow - totVenRow - stkFinalR);
+      const estado    = merma > 0
+        ? `<span class="badge-warn">⚠ Revisar</span>`
+        : `<span class="badge-ok">✓ OK</span>`;
+      return `<tr>
+        <td style="font-size:12px">${prod}</td>
+        <td class="r" style="font-size:12px;color:var(--muted)">${Math.round(stockIni)}</td>
+        <td class="r" style="font-size:12px;color:var(--blue)">${Math.round(totIngRow)}</td>
+        <td class="r" style="font-size:12px;color:var(--accent)">${Math.round(totVenRow)}</td>
+        <td class="r" style="font-size:12px;color:var(--green)">${Math.round(stkFinalR)}</td>
+        <td class="r" style="font-size:12px;color:${merma>0?'var(--red)':'var(--muted)'}">${Math.round(merma)}</td>
+        <td class="r">${estado}</td>
+      </tr>`;
+    }).join('');
 
-      document.getElementById('vinosMermaVal').textContent=Math.round(mermaTotal);
+    document.getElementById('vinosTablaContainer').innerHTML = `
+      <table class="dt">
+        <thead><tr>
+          <th style="width:30%">Vino</th>
+          <th style="text-align:right">Stk Ini</th>
+          <th style="text-align:right">Ingresos</th>
+          <th style="text-align:right">Ventas</th>
+          <th style="text-align:right">Stock</th>
+          <th style="text-align:right">Merma</th>
+          <th style="text-align:right">Estado</th>
+        </tr></thead>
+        <tbody>${filas}</tbody>
+      </table>`;
 
-      document.getElementById('vinosMovContainer').innerHTML=`
-        <table class="dt">
-          <thead><tr>
-            <th style="width:35%">Vino</th>
-            <th style="text-align:right">Entradas</th>
-            <th style="text-align:right">Salidas</th>
-            <th style="text-align:right">Stock</th>
-            <th style="text-align:right">Merma</th>
-            <th style="text-align:right">Estado</th>
-          </tr></thead>
-          <tbody>${filas}</tbody>
-        </table>`;
-    } else {
-      document.getElementById('vinosMovContainer').innerHTML='<div class="empty">Sin movimientos para este mes</div>';
-      document.getElementById('vinosTopContainer').innerHTML='<div class="empty">Sin datos de ventas para este mes</div>';
-    }
+    // Resumen semanal también en Operaciones
+    const semHtml = sems.map(s => {
+      const ing = vinosMes.reduce((sum,r) => sum + n(r[s.ing]), 0);
+      const ven = vinosMes.reduce((sum,r) => sum + n(r[s.ven]), 0);
+      const stk = vinosMes.reduce((sum,r) => sum + n(r[s.stk]), 0);
+      return `<div class="vino-sem-card">
+        <div class="vino-sem-titulo">${s.label}</div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Ingreso</span><span class="vino-sem-val ing">${Math.round(ing)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Venta</span><span class="vino-sem-val ven">${Math.round(ven)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Stock</span><span class="vino-sem-val stk">${Math.round(stk)}</span></div>
+      </div>`;
+    }).join('');
+    const opsEl = document.getElementById('vinosSemanasOps');
+    if (opsEl) opsEl.innerHTML = semHtml;
+
   } catch(e) {
-    document.getElementById('vinosMovContainer').innerHTML='<div class="empty">Sin datos de movimientos</div>';
-    document.getElementById('vinosTopContainer').innerHTML='<div class="empty">Sin datos</div>';
-    document.getElementById('vinosKpis').innerHTML='<div class="empty" style="grid-column:1/-1">Sin datos de movimientos</div>';
+    const err = '<div class="empty">Error cargando datos de vinos</div>';
+    document.getElementById('vinosKpis').innerHTML = `<div class="empty" style="grid-column:1/-1">Error cargando datos de vinos</div>`;
+    document.getElementById('vinosSemanasGrid').innerHTML = err;
+    document.getElementById('vinosTopContainer').innerHTML = err;
+    document.getElementById('vinosTablaContainer').innerHTML = err;
   }
 
   document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
@@ -785,18 +813,7 @@ function renderEjemplo() {
 }
 
 function renderStockEjemplo() {
-  const stockCarnes=[
-    {n:'Ojo de bife',s:44,l:false},{n:'Lomo',s:18,l:false},{n:'Bondiola',s:96,l:false},{n:'Matambre',s:12,l:false},
-    {n:'Mila Carta',s:149,l:false},{n:'Mila Menú',s:50,l:false},{n:'Suprema',s:33,l:false},
-    {n:'Salmón',s:5,l:true},{n:'Churrasquito cerdo',s:10,l:false},{n:'Empanadas carne',s:14,l:true},{n:'Empanadas JyQ',s:93,l:false},
-  ];
-  document.getElementById('stockCarnes').innerHTML=`
-    <div class="card" style="grid-column:1/-1">
-      <div class="card-title"><span>▸</span> Productos Elaborados</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0 24px">
-        ${stockCarnes.map(i=>`<div class="stock-item"><div class="dot ${i.l?'low':'ok'}"></div><div class="stock-name">${i.n}</div><div class="stock-val">${i.s} u</div></div>`).join('')}
-      </div>
-    </div>`;
+  document.getElementById('stockCarnes').innerHTML=`<div class="card" style="grid-column:1/-1"><div class="empty">Sin datos de productos elaborados</div></div>`;
 }
 
 loadOps();
