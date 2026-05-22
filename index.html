@@ -294,7 +294,7 @@
   <div class="tab-content" id="tab-stock">
 
     <div class="sdiv"><div class="sdiv-t">PRODUCTOS ELABORADOS</div><div class="sdiv-l"></div></div>
-    <div class="g3" id="stockCarnes" style="margin-bottom:14px">
+    <div class="g2" id="stockCarnes" style="margin-bottom:14px">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
     </div>
 
@@ -611,14 +611,14 @@ async function loadStock() {
     let stockRows=null;
     for (let sem=5;sem>=1;sem--) {
       try {
-        const r=await fetchSheet(getSheetOps(),`SEMANA ${sem}!A1:H95`);
+        const r=await fetchSheet(getSheetOps(),`SEMANA ${sem}!A1:H175`);
         const tieneDatos=r.some(row=>row[0]==='TOTAL'&&row.slice(1).some(v=>parseFloat(v)>0));
         if (tieneDatos){stockRows=r;break;}
       } catch(e){continue;}
     }
     if (!stockRows) throw new Error('Sin datos');
     const productoStock={};
-    const productoNames=['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','MILA GROSA','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    const productoNames=['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','MILA GROSA','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ','RAVIOLES VERDES','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS'];
     productoNames.forEach(nombre=>{
       for (let i=0;i<stockRows.length;i++){
         if (stockRows[i][0]&&stockRows[i][0].trim()===nombre){
@@ -635,12 +635,13 @@ async function loadStock() {
     const carnes=['OJO','LOMO','BONDIOLA','MATAMBRE'];
     const milanesas=['MILA CARTA','MILA MENU','MILA GROSA','SUPREMA'];
     const otros=['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    const pastas=['RAVIOLES VERDES','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS'];
     const renderGrupo=(titulo,lista)=>`
       <div class="card">
         <div class="card-title"><span>▸</span> ${titulo}</div>
         ${lista.map(p=>{const stock=productoStock[p]||0;const low=stock<10;return `<div class="stock-item"><div class="dot ${low?'low':'ok'}"></div><div class="stock-name">${p}</div><div class="stock-val">${stock} u</div></div>`;}).join('')}
       </div>`;
-    document.getElementById('stockCarnes').innerHTML=renderGrupo('Carnes',carnes)+renderGrupo('Milanesas',milanesas)+renderGrupo('Otros',otros);
+    document.getElementById('stockCarnes').innerHTML=renderGrupo('Carnes',carnes)+renderGrupo('Milanesas',milanesas)+renderGrupo('Otros',otros)+renderGrupo('🍝 Pastas',pastas);
   } catch(e){renderStockEjemplo();}
 
   // Secos
