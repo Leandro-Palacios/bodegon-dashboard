@@ -258,6 +258,10 @@
     <div class="vino-sem-grid" id="vinosSemanasOps" style="margin-bottom:14px">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
     </div>
+    <div class="sdiv"><div class="sdiv-t">TOP 5 VINOS MÁS VENDIDOS</div><div class="sdiv-l"></div></div>
+    <div class="card" style="margin-bottom:14px">
+      <div id="vinosTopOps"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
   </div>
 
   <!-- PROVEEDORES -->
@@ -306,11 +310,6 @@
     <div class="sdiv"><div class="sdiv-t">VINOS — RESUMEN DEL MES</div><div class="sdiv-l"></div></div>
     <div class="kpi-grid" id="vinosKpis" style="margin-bottom:14px">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
-    </div>
-
-    <div class="sdiv"><div class="sdiv-t">TOP 5 MÁS VENDIDOS</div><div class="sdiv-l"></div></div>
-    <div class="card" style="margin-bottom:14px">
-      <div id="vinosTopContainer"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
     <div class="sdiv"><div class="sdiv-t">DETALLE POR VINO</div><div class="sdiv-l"></div></div>
@@ -602,27 +601,41 @@ function renderDetalleProveedor() {
     </div>`).join('');
 }
 
+// ── COLLAPSIBLE ──
+function toggleSection(id, btn) {
+  const el = document.getElementById(id);
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? '' : 'none';
+  btn.querySelector('.toggle-icon').textContent = isHidden ? '▾' : '▸';
+}
+
 // ── STOCK ──
 async function loadStock() {
   document.getElementById('lastUpdate').textContent='Actualizando...';
 
-  // Carnes
+  // Carnes + Pastas
   try {
     let stockRows=null;
     for (let sem=5;sem>=1;sem--) {
       try {
-        const r=await fetchSheet(getSheetOps(),`SEMANA ${sem}!A1:H175`);
+        const r=await fetchSheet(getSheetOps(),`SEMANA ${sem}!A1:H195`);
         const tieneDatos=r.some(row=>row[0]==='TOTAL'&&row.slice(1).some(v=>parseFloat(v)>0));
         if (tieneDatos){stockRows=r;break;}
       } catch(e){continue;}
     }
     if (!stockRows) throw new Error('Sin datos');
     const productoStock={};
-    const productoNames=['OJO','LOMO','BONDIOLA','SALMON','MATAMBRE','MILA CARTA','MILA MENU','MILA GROSA','SUPREMA','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ','RAVIOLES VERDES','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS'];
+    const productoNames=[
+      'OJO','LOMO','BONDIOLA','SALMON','MATAMBRE',
+      'MILA CARTA','MILA MENU','MILA GROSA','SUPREMA',
+      'CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ',
+      'RAVIOL VERDE','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS',
+      'RAVIOL OSOBUCO','CANELONES VERDURA','CANELON CARNE'
+    ];
     productoNames.forEach(nombre=>{
       for (let i=0;i<stockRows.length;i++){
         if (stockRows[i][0]&&stockRows[i][0].trim()===nombre){
-          for (let j=i+1;j<Math.min(i+8,stockRows.length);j++){
+          for (let j=i+1;j<Math.min(i+10,stockRows.length);j++){
             if (stockRows[j][0]==='TOTAL'){
               const vals=stockRows[j].slice(1,8).filter(v=>v!==''&&v!==undefined&&parseFloat(v)>0);
               productoStock[nombre]=vals.length>0?parseFloat(vals[vals.length-1]):0; break;
@@ -635,16 +648,22 @@ async function loadStock() {
     const carnes=['OJO','LOMO','BONDIOLA','MATAMBRE'];
     const milanesas=['MILA CARTA','MILA MENU','MILA GROSA','SUPREMA'];
     const otros=['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
-    const pastas=['RAVIOLES VERDES','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS'];
-    const renderGrupo=(titulo,lista)=>`
+    const pastas=['RAVIOL VERDE','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS','RAVIOL OSOBUCO','CANELONES VERDURA','CANELON CARNE'];
+
+    const renderGrupo=(titulo,lista,unidad='u')=>`
       <div class="card">
         <div class="card-title"><span>▸</span> ${titulo}</div>
-        ${lista.map(p=>{const stock=productoStock[p]||0;const low=stock<10;return `<div class="stock-item"><div class="dot ${low?'low':'ok'}"></div><div class="stock-name">${p}</div><div class="stock-val">${stock} u</div></div>`;}).join('')}
+        ${lista.map(p=>{const stock=productoStock[p]||0;const low=stock<10;return `<div class="stock-item"><div class="dot ${low?'low':'ok'}"></div><div class="stock-name">${p}</div><div class="stock-val">${stock} ${unidad}</div></div>`;}).join('')}
       </div>`;
-    document.getElementById('stockCarnes').innerHTML=renderGrupo('Carnes',carnes)+renderGrupo('Milanesas',milanesas)+renderGrupo('Otros',otros)+renderGrupo('🍝 Pastas',pastas);
+
+    document.getElementById('stockCarnes').innerHTML=
+      renderGrupo('Carnes',carnes)+
+      renderGrupo('Milanesas',milanesas)+
+      renderGrupo('Otros',otros)+
+      renderGrupo('🍝 Pastas',pastas,'porc');
   } catch(e){renderStockEjemplo();}
 
-  // Secos
+  // Secos — colapsable
   try {
     const rows=await fetchSheet(SHEET_PROV,'Stock!A2:G500');
     const items=rows.filter(r=>r[0]);
@@ -668,99 +687,121 @@ async function loadStock() {
       if(!porCategoria[cat])porCategoria[cat]=[];
       porCategoria[cat].push({producto:r[0],unidad:r[2]||'',actual:parseFloat(r[3])||0,minimo:parseFloat(r[4])||0});
     });
-    document.getElementById('stockGrid').innerHTML=Object.entries(porCategoria).map(([cat,items])=>`
-      <div class="card">
-        <div class="card-title"><span>▸</span> ${cat}</div>
-        ${items.map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} ${item.unidad}</div></div>`).join('')}
-      </div>`).join('');
+    document.getElementById('stockGrid').innerHTML=Object.entries(porCategoria).map(([cat,items],idx)=>{
+      const id=`sec-secos-${idx}`;
+      return `<div class="card">
+        <div class="card-title" style="cursor:pointer" onclick="toggleSection('${id}',this)">
+          <span class="toggle-icon">▾</span> ${cat}
+        </div>
+        <div id="${id}">
+          ${items.map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} ${item.unidad}</div></div>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
   } catch(e){document.getElementById('stockGrid').innerHTML='<div class="empty">Sin datos de secos</div>';}
 
-  // ── VINOS — nueva lógica desde MOVIMIENTOS VINOS ──
+  // ── VINOS ──
   try {
-    const mesLabel = getMesLabel(); // ej: "mayo 2026"
-    const rows = await fetchSheet(SHEET_PROV, 'MOVIMIENTOS VINOS!A3:U500');
-
-    // Filtrar por mes (col B = índice 1)
+    const mesLabel = getMesLabel();
+    // Nueva estructura: A3:AA500 (27 columnas)
+    // 0=PRODUCTO, 1=MES, 2=STOCK_INI
+    // S1: 3=ING, 4=VEN, 5=MERMA, 6=STOCK
+    // S2: 7=ING, 8=VEN, 9=MERMA, 10=STOCK
+    // S3: 11=ING, 12=VEN, 13=MERMA, 14=STOCK
+    // S4: 15=ING, 16=VEN, 17=MERMA, 18=STOCK
+    // S5: 19=ING, 20=VEN, 21=MERMA, 22=STOCK
+    // RES: 23=TOT_ING, 24=TOT_VEN, 25=TOT_MERMA, 26=STK_FINAL
+    const rows = await fetchSheet(SHEET_PROV, 'MOVIMIENTOS VINOS!A3:AA500');
     const vinosMes = rows.filter(r => r[1] && r[1].toLowerCase().trim() === mesLabel.toLowerCase().trim());
 
     if (vinosMes.length === 0) {
       const sinDatos = '<div class="empty">Sin datos para este mes</div>';
       document.getElementById('vinosKpis').innerHTML = `<div class="empty" style="grid-column:1/-1">Sin datos de vinos para ${mesLabel}</div>`;
-      document.getElementById('vinosSemanasGrid').innerHTML = sinDatos;
-      document.getElementById('vinosTopContainer').innerHTML = sinDatos;
+      document.getElementById('vinosTopOps').innerHTML = sinDatos;
       document.getElementById('vinosTablaContainer').innerHTML = sinDatos;
+      const opsEl = document.getElementById('vinosSemanasOps');
+      if (opsEl) opsEl.innerHTML = sinDatos;
       return;
     }
 
-    // Columnas (índice 0-based):
-    // 0=PRODUCTO, 1=MES, 2=STOCK_INI
-    // 3=S1ING, 4=S1VEN, 5=S1STK
-    // 6=S2ING, 7=S2VEN, 8=S2STK
-    // 9=S3ING, 10=S3VEN, 11=S3STK
-    // 12=S4ING, 13=S4VEN, 14=S4STK
-    // 15=S5ING, 16=S5VEN, 17=S5STK
-    // 18=TOT_ING, 19=TOT_VEN, 20=STK_FINAL
-
     const n = v => parseFloat(v) || 0;
 
-    // KPIs globales del mes
-    const totIng    = vinosMes.reduce((s,r) => s + n(r[18]), 0);
-    const totVen    = vinosMes.reduce((s,r) => s + n(r[19]), 0);
-    const stkFinal  = vinosMes.reduce((s,r) => s + n(r[20]), 0);
-    const stkIni    = vinosMes.reduce((s,r) => s + n(r[2]),  0);
-    const mermaTotal = Math.max(0, stkIni + totIng - totVen - stkFinal);
+    // KPIs
+    const totIng   = vinosMes.reduce((s,r) => s + n(r[23]), 0);
+    const totVen   = vinosMes.reduce((s,r) => s + n(r[24]), 0);
+    const totMerma = vinosMes.reduce((s,r) => s + n(r[25]), 0);
+    const stkFinal = vinosMes.reduce((s,r) => s + n(r[26]), 0);
 
     document.getElementById('vinosKpis').innerHTML = `
       <div class="kpi-card"><div class="kpi-label">📦 Ingresos del Mes</div><div class="kpi-value">${Math.round(totIng)}</div><div class="kpi-sub">botellas ingresadas</div></div>
       <div class="kpi-card"><div class="kpi-label">🍷 Ventas del Mes</div><div class="kpi-value">${Math.round(totVen)}</div><div class="kpi-sub">botellas vendidas</div></div>
       <div class="kpi-card"><div class="kpi-label">📊 Stock Actual</div><div class="kpi-value">${Math.round(stkFinal)}</div><div class="kpi-sub">botellas en depósito</div></div>
-      <div class="kpi-card"><div class="kpi-label">⚠️ Merma Total</div><div class="kpi-value" style="color:${mermaTotal>0?'var(--red)':'var(--green)'}">${Math.round(mermaTotal)}</div><div class="kpi-sub">botellas sin explicación</div></div>`;
+      <div class="kpi-card"><div class="kpi-label">⚠️ Merma Total</div><div class="kpi-value" style="color:${totMerma>0?'var(--red)':'var(--green)'}">${Math.round(totMerma)}</div><div class="kpi-sub">botellas sin explicación</div></div>`;
 
-    // Resumen por semana
+    // Resumen semanal → Operaciones
     const sems = [
-      {label:'Sem 1', ing:3, ven:4, stk:5},
-      {label:'Sem 2', ing:6, ven:7, stk:8},
-      {label:'Sem 3', ing:9, ven:10, stk:11},
-      {label:'Sem 4', ing:12, ven:13, stk:14},
-      {label:'Sem 5', ing:15, ven:16, stk:17},
+      {label:'Sem 1', ing:3,  ven:4,  merma:5,  stk:6},
+      {label:'Sem 2', ing:7,  ven:8,  merma:9,  stk:10},
+      {label:'Sem 3', ing:11, ven:12, merma:13, stk:14},
+      {label:'Sem 4', ing:15, ven:16, merma:17, stk:18},
+      {label:'Sem 5', ing:19, ven:20, merma:21, stk:22},
     ];
-    // Top 5 más vendidos
+    const semHtml = sems.map(s => {
+      const ing   = vinosMes.reduce((sum,r) => sum + n(r[s.ing]),   0);
+      const ven   = vinosMes.reduce((sum,r) => sum + n(r[s.ven]),   0);
+      const merma = vinosMes.reduce((sum,r) => sum + n(r[s.merma]), 0);
+      const stk   = vinosMes.reduce((sum,r) => sum + n(r[s.stk]),   0);
+      return `<div class="vino-sem-card">
+        <div class="vino-sem-titulo">${s.label}</div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Ingreso</span><span class="vino-sem-val ing">${Math.round(ing)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Venta</span><span class="vino-sem-val ven">${Math.round(ven)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Merma</span><span class="vino-sem-val" style="color:${merma>0?'var(--red)':'var(--muted)'}">${Math.round(merma)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Stock</span><span class="vino-sem-val stk">${Math.round(stk)}</span></div>
+      </div>`;
+    }).join('');
+    const opsEl = document.getElementById('vinosSemanasOps');
+    if (opsEl) opsEl.innerHTML = semHtml;
+
+    // Top 5 → Operaciones
     const ranking = vinosMes
-      .map(r => ({nombre: r[0]||'', ventas: n(r[19])}))
+      .map(r => ({nombre: r[0]||'', ventas: n(r[24])}))
       .filter(v => v.ventas > 0)
       .sort((a,b) => b.ventas - a.ventas)
       .slice(0,5);
-
-    if (ranking.length > 0) {
-      const maxV = ranking[0].ventas;
-      document.getElementById('vinosTopContainer').innerHTML = ranking.map(v => `
-        <div class="bar-row">
-          <div class="bar-label" style="width:220px">${v.nombre}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${v.ventas/maxV*100}%;background:#9b59b6"></div></div>
-          <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${Math.round(v.ventas)} bot</div>
-        </div>`).join('');
-    } else {
-      document.getElementById('vinosTopContainer').innerHTML = '<div class="empty">Sin ventas registradas aún</div>';
+    const topEl = document.getElementById('vinosTopOps');
+    if (topEl) {
+      topEl.innerHTML = ranking.length > 0
+        ? ranking.map((v,i) => {
+            const maxV = ranking[0].ventas;
+            const rks = ['g1','g2','g3'];
+            return `<div class="bar-row">
+              <div style="width:22px;flex-shrink:0"><span class="rn ${rks[i]||''}">${i+1}</span></div>
+              <div class="bar-label" style="width:200px">${v.nombre}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${v.ventas/maxV*100}%;background:#9b59b6"></div></div>
+              <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${Math.round(v.ventas)} bot</div>
+            </div>`;
+          }).join('')
+        : '<div class="empty">Sin ventas registradas aún</div>';
     }
 
-    // Tabla detalle por vino
+    // Tabla detalle
     const filas = vinosMes.map(r => {
-      const prod      = r[0] || '';
-      const stockIni  = n(r[2]);
-      const totIngRow = n(r[18]);
-      const totVenRow = n(r[19]);
-      const stkFinalR = n(r[20]);
-      const merma     = Math.max(0, stockIni + totIngRow - totVenRow - stkFinalR);
-      const estado    = merma > 0
+      const prod     = r[0] || '';
+      const stkIni   = n(r[2]);
+      const totI     = n(r[23]);
+      const totV     = n(r[24]);
+      const totM     = n(r[25]);
+      const stkF     = n(r[26]);
+      const estado   = totM > 0
         ? `<span class="badge-warn">⚠ Revisar</span>`
         : `<span class="badge-ok">✓ OK</span>`;
       return `<tr>
         <td style="font-size:12px">${prod}</td>
-        <td class="r" style="font-size:12px;color:var(--muted)">${Math.round(stockIni)}</td>
-        <td class="r" style="font-size:12px;color:var(--blue)">${Math.round(totIngRow)}</td>
-        <td class="r" style="font-size:12px;color:var(--accent)">${Math.round(totVenRow)}</td>
-        <td class="r" style="font-size:12px;color:var(--green)">${Math.round(stkFinalR)}</td>
-        <td class="r" style="font-size:12px;color:${merma>0?'var(--red)':'var(--muted)'}">${Math.round(merma)}</td>
+        <td class="r" style="font-size:12px;color:var(--muted)">${Math.round(stkIni)}</td>
+        <td class="r" style="font-size:12px;color:var(--blue)">${Math.round(totI)}</td>
+        <td class="r" style="font-size:12px;color:var(--accent)">${Math.round(totV)}</td>
+        <td class="r" style="font-size:12px;color:var(--green)">${Math.round(stkF)}</td>
+        <td class="r" style="font-size:12px;color:${totM>0?'var(--red)':'var(--muted)'}">${Math.round(totM)}</td>
         <td class="r">${estado}</td>
       </tr>`;
     }).join('');
@@ -779,26 +820,9 @@ async function loadStock() {
         <tbody>${filas}</tbody>
       </table>`;
 
-    // Resumen semanal también en Operaciones
-    const semHtml = sems.map(s => {
-      const ing = vinosMes.reduce((sum,r) => sum + n(r[s.ing]), 0);
-      const ven = vinosMes.reduce((sum,r) => sum + n(r[s.ven]), 0);
-      const stk = vinosMes.reduce((sum,r) => sum + n(r[s.stk]), 0);
-      return `<div class="vino-sem-card">
-        <div class="vino-sem-titulo">${s.label}</div>
-        <div class="vino-sem-fila"><span class="vino-sem-label">Ingreso</span><span class="vino-sem-val ing">${Math.round(ing)}</span></div>
-        <div class="vino-sem-fila"><span class="vino-sem-label">Venta</span><span class="vino-sem-val ven">${Math.round(ven)}</span></div>
-        <div class="vino-sem-fila"><span class="vino-sem-label">Stock</span><span class="vino-sem-val stk">${Math.round(stk)}</span></div>
-      </div>`;
-    }).join('');
-    const opsEl = document.getElementById('vinosSemanasOps');
-    if (opsEl) opsEl.innerHTML = semHtml;
-
   } catch(e) {
     const err = '<div class="empty">Error cargando datos de vinos</div>';
     document.getElementById('vinosKpis').innerHTML = `<div class="empty" style="grid-column:1/-1">Error cargando datos de vinos</div>`;
-    document.getElementById('vinosSemanasGrid').innerHTML = err;
-    document.getElementById('vinosTopContainer').innerHTML = err;
     document.getElementById('vinosTablaContainer').innerHTML = err;
   }
 
