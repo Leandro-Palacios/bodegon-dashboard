@@ -254,6 +254,10 @@
         <div id="mermaContainer"><div class="empty">Sin datos</div></div>
       </div>
     </div>
+    <div class="sdiv"><div class="sdiv-t">CONSUMO DE CARNES</div><div class="sdiv-l"></div></div>
+    <div class="card" style="margin-bottom:14px">
+      <div id="carnesContainer"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
     <div class="sdiv"><div class="sdiv-t">VINOS — MOVIMIENTO SEMANAL</div><div class="sdiv-l"></div></div>
     <div class="vino-sem-grid" id="vinosSemanasOps" style="margin-bottom:14px">
       <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div>
@@ -392,6 +396,7 @@ async function loadOps() {
     const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H70`);
     renderKPIs(rows); renderSemanas(rows); renderCanales(rows); renderMozos(rows); renderProductos(rows);
   } catch(e) { renderEjemplo(); }
+  await renderCarnes();
   document.getElementById('lastUpdate').textContent = `${new Date().toLocaleTimeString('es-AR')}`;
 }
 
@@ -828,6 +833,80 @@ async function loadStock() {
   }
 
   document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
+}
+
+async function renderCarnes() {
+  try {
+    const mesVal = document.getElementById('monthSelect').value;
+    const partesMes = mesVal.split('_');
+    const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',
+      JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+    const mesNum = mesesMap[partesMes[0]] || '';
+    const anioCorto = partesMes[1] ? partesMes[1].slice(-2) : '';
+
+    const rows = await fetchSheet(SHEET_PROV, 'Registro Pedidos!A3:L10000');
+    const provCarnes = ['sipe','amancay','jonathan'];
+
+    // Filtrar por mes y proveedores de carne
+    const filas = rows.filter(r => {
+      if (!r[0] || !r[1]) return false;
+      const f = r[0].split('/');
+      if (f.length !== 3 || f[1] !== mesNum || f[2].slice(-2) !== anioCorto) return false;
+      const prov = (r[1] || '').toLowerCase();
+      return provCarnes.some(p => prov.includes(p));
+    });
+
+    // Keywords → corte
+    const cortes = [
+      { nombre: 'Ojo de bife',        keys: ['ojo'],          kg: 0 },
+      { nombre: 'Lomo',               keys: ['lomo'],         kg: 0 },
+      { nombre: 'Bondiola',           keys: ['bondiola'],     kg: 0 },
+      { nombre: 'Picada',             keys: ['picada'],       kg: 0 },
+      { nombre: 'Paleta',             keys: ['paleta'],       kg: 0 },
+      { nombre: 'Mollejas',           keys: ['molleja'],      kg: 0 },
+      { nombre: 'Churrasquito cerdo', keys: ['churrasquito'], kg: 0 },
+      { nombre: 'Pata muslo',         keys: ['pata muslo','pata'],    kg: 0, esCaja: true },
+      { nombre: 'Pechuga / Suprema',  keys: ['pechuga','suprema'],    kg: 0, esCaja: true },
+    ];
+
+    filas.forEach(r => {
+      const producto = (r[2] || '').toLowerCase();
+      const cantidad = parseFloat(r[3]) || 0;
+      const unidad   = (r[4] || '').toLowerCase();
+
+      cortes.forEach(c => {
+        if (c.keys.some(k => producto.includes(k))) {
+          if (c.esCaja) {
+            // cajas → kg (15 kg por caja)
+            if (unidad.includes('unidad') || unidad.includes('caja') || unidad === '') {
+              c.kg += cantidad * 15;
+            } else {
+              c.kg += cantidad;
+            }
+          } else {
+            c.kg += cantidad;
+          }
+        }
+      });
+    });
+
+    const cortesConDatos = cortes.filter(c => c.kg > 0);
+    if (cortesConDatos.length === 0) {
+      document.getElementById('carnesContainer').innerHTML = '<div class="empty">Sin datos de carnes para este mes</div>';
+      return;
+    }
+
+    const maxKg = Math.max(...cortesConDatos.map(c => c.kg));
+    document.getElementById('carnesContainer').innerHTML = cortesConDatos.map(c => `
+      <div class="bar-row">
+        <div class="bar-label" style="width:160px">${c.nombre}</div>
+        <div class="bar-track"><div class="bar-fill a" style="width:${c.kg/maxKg*100}%"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${c.kg.toFixed(1)} kg</div>
+      </div>`).join('');
+
+  } catch(e) {
+    document.getElementById('carnesContainer').innerHTML = '<div class="empty">Sin datos de carnes</div>';
+  }
 }
 
 function renderEjemplo() {
