@@ -610,7 +610,7 @@ function renderDetalleProveedor() {
 function toggleSection(id, btn) {
   const el = document.getElementById(id);
   const isHidden = el.style.display === 'none';
-  el.style.display = isHidden ? '' : 'none';
+  el.style.display = isHidden ? 'grid' : 'none';
   btn.querySelector('.toggle-icon').textContent = isHidden ? '▾' : '▸';
 }
 
@@ -697,9 +697,9 @@ async function loadStock() {
       return `<div class="card" style="padding:0;overflow:hidden;">
         <div onclick="toggleSection('${id}',this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);">
           <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--text);">${cat}</div>
-          <span class="toggle-icon" style="font-size:16px;color:var(--accent);">▾</span>
+          <span class="toggle-icon" style="font-size:16px;color:var(--accent);">▸</span>
         </div>
-        <div id="${id}" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0;padding:8px 12px;">
+        <div id="${id}" style="display:none;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0;padding:8px 12px;">
           ${items.map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} ${item.unidad}</div></div>`).join('')}
         </div>
       </div>`;
