@@ -845,7 +845,7 @@ async function renderCarnes() {
     const anioCorto = partesMes[1] ? partesMes[1].slice(-2) : '';
 
     const rows = await fetchSheet(SHEET_PROV, 'Registro Pedidos!A3:L10000');
-    const provCarnes = ['sipe','amancay','jonathan'];
+    const provCarnes = ['sipe','amancay','jonathan','breitburd'];
 
     // Filtrar por mes y proveedores de carne
     const filas = rows.filter(r => {
@@ -871,7 +871,7 @@ async function renderCarnes() {
 
     filas.forEach(r => {
       const producto = (r[2] || '').toLowerCase();
-      const cantidad = parseFloat(r[3]) || 0;
+      const cantidad = parseFloat(r[3]) || (r[3] === '' || r[3] === undefined ? 1 : 0);
       const unidad   = (r[4] || '').toLowerCase();
 
       cortes.forEach(c => {
