@@ -22,6 +22,788 @@
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:var(--font-b); }
+  .header { background:var(--surface); border-bottom:1px solid var(--border); padding:0 40px; display:flex; align-items:stretch; justify-content:space-between; position:sticky; top:0; z-index:100; min-height:60px; }
+  .header-left { display:flex; align-items:center; gap:32px; }
+  .logo-text { font-family:var(--font-d); font-size:22px; letter-spacing:3px; }
+  .tabs { display:flex; align-items:stretch; gap:0; }
+  .tab-btn { background:none; border:none; border-bottom:2px solid transparent; color:var(--muted); font-family:var(--font-b); font-size:13px; font-weight:500; padding:0 20px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:6px; }
+  .tab-btn:hover { color:var(--text); }
+  .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+  .subheader { background:var(--surface); border-bottom:1px solid var(--border); padding:10px 40px; display:flex; align-items:center; gap:12px; }
+  .month-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+  .month-select { background:var(--surface2); border:1px solid var(--border); color:var(--text); font-family:var(--font-b); font-size:13px; padding:6px 12px; border-radius:6px; cursor:pointer; outline:none; }
+  .refresh-btn { background:var(--accent); border:none; color:#000; font-family:var(--font-b); font-size:12px; font-weight:600; padding:6px 14px; border-radius:6px; cursor:pointer; }
+  .last-update { margin-left:auto; font-size:11px; color:var(--muted); }
+  .main { padding:32px 40px; max-width:1400px; margin:0 auto; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+  .kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px; position:relative; overflow:hidden; }
+  .kpi-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),transparent); }
+  .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .kpi-value { font-family:var(--font-d); font-size:34px; letter-spacing:1px; line-height:1; }
+  .kpi-sub { font-size:11px; color:var(--muted); margin-top:5px; }
+  .g2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:22px; }
+  .card-title { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:6px; }
+  .card-title span { color:var(--accent); }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .bar-row:last-child { margin-bottom:0; }
+  .bar-label { font-size:13px; width:120px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-label.cap { text-transform:capitalize; }
+  .bar-track { flex:1; height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; transition:width 1s cubic-bezier(.4,0,.2,1); }
+  .bar-fill.a { background:var(--accent); }
+  .bar-fill.b { background:var(--blue); }
+  .bar-fill.g { background:var(--green); }
+  .bar-val { font-family:var(--font-d); font-size:15px; width:110px; text-align:right; flex-shrink:0; }
+  .bar-sub { font-size:11px; color:var(--muted); }
+  .sem-row { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .sem-row:last-child { border-bottom:none; }
+  .sem-label { font-size:12px; color:var(--muted); width:65px; flex-shrink:0; }
+  .sem-wrap { flex:1; }
+  .sem-track { height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; }
+  .sem-fill { height:100%; background:var(--accent); border-radius:3px; transition:width 1s ease; }
+  .sem-cubs { font-size:11px; color:var(--muted); margin-top:3px; }
+  .sem-val { font-family:var(--font-d); font-size:17px; width:120px; text-align:right; flex-shrink:0; }
+  .dt { width:100%; border-collapse:collapse; font-size:13px; }
+  .dt th { text-align:left; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:1px; padding:7px 10px; border-bottom:1px solid var(--border); font-weight:500; }
+  .dt td { padding:10px 10px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .dt tr:last-child td { border-bottom:none; }
+  .dt tr:hover td { background:rgba(255,255,255,0.015); }
+  .dt td.r { text-align:right; }
+  .dt td.ac { color:var(--accent); }
+  .rn { font-family:var(--font-d); font-size:18px; color:var(--muted); }
+  .rn.g1 { color:#ffd700; }
+  .rn.g2 { color:#c0c0c0; }
+  .rn.g3 { color:#cd7f32; }
+  .sdiv { display:flex; align-items:center; gap:14px; margin:28px 0 18px; }
+  .sdiv-t { font-family:var(--font-d); font-size:20px; letter-spacing:3px; color:var(--accent); white-space:nowrap; }
+  .sdiv-l { flex:1; height:1px; background:var(--border); }
+  .stock-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px; }
+  .stock-item:last-child { border-bottom:none; }
+  .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .dot.ok { background:var(--green); }
+  .dot.low { background:var(--red); box-shadow:0 0 5px var(--red); animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+  .stock-name { flex:1; }
+  .stock-val { color:var(--muted); }
+  .loading { display:flex; align-items:center; justify-content:center; height:100px; color:var(--muted); font-size:13px; gap:8px; }
+  .spinner { width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .empty { text-align:center; color:var(--muted); font-size:13px; padding:32px; }
+  .badge-ok { background:rgba(77,184,122,0.15); color:var(--green); font-size:11px; padding:2px 8px; border-radius:4px; }
+  .badge-warn { background:rgba(224,82,82,0.15); color:var(--red); font-size:11px; padding:2px 8px; border-radius:4px; }
+  .vino-sem-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px; }
+  .vino-sem-card { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:14px; text-align:center; }
+  .vino-sem-titulo { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+  .vino-sem-fila { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; }
+  .vino-sem-fila:last-child { margin-bottom:0; }
+  .vino-sem-label { color:var(--muted); }
+  .vino-sem-val { font-weight:600; }
+  .vino-sem-val.ing { color:var(--blue); }
+  .vino-sem-val.ven { color:var(--accent); }
+  .vino-sem-val.stk { color:var(--green); }
+  @media(max-width:900px) {
+    .kpi-grid { grid-template-columns:repeat(2,1fr); }
+    .g2,.g3 { grid-template-columns:1fr; }
+    .vino-sem-grid { grid-template-columns:repeat(2,1fr); }
+    .main { padding:16px; }
+    .header { padding:0 16px; }
+    .subheader { padding:10px 16px; flex-wrap:wrap; }
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-left">
+    <div class="logo-text">BODEGÓN NUÑEZ</div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('ops',this)">📊 Operaciones</button>
+      <button class="tab-btn" onclick="switchTab('prov',this)">📦 Proveedores</button>
+      <button class="tab-btn" onclick="switchTab('stock',this)">🏪 Stock</button>
+    </div>
+  </div>
+</header>
+<div class="subheader">
+  <span class="month-label">Período</span>
+  <select class="month-select" id="monthSelect" onchange="reloadCurrent()">
+    <option value="MARZO_2026">Marzo 2026</option>
+    <option value="ABRIL_2026">Abril 2026</option>
+    <option value="MAYO_2026" selected>Mayo 2026</option>
+    <option value="JUNIO_2026">Junio 2026</option>
+    <option value="JULIO_2026">Julio 2026</option>
+    <option value="AGOSTO_2026">Agosto 2026</option>
+    <option value="SEPTIEMBRE_2026">Septiembre 2026</option>
+    <option value="OCTUBRE_2026">Octubre 2026</option>
+    <option value="NOVIEMBRE_2026">Noviembre 2026</option>
+    <option value="DICIEMBRE_2026">Diciembre 2026</option>
+  </select>
+  <button class="refresh-btn" onclick="reloadCurrent()">↻ Actualizar</button>
+  <span class="last-update" id="lastUpdate">—</span>
+</div>
+<main class="main">
+  <!-- OPERACIONES -->
+  <div class="tab-content active" id="tab-ops">
+    <div class="kpi-grid" id="kpiGrid"><div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div></div>
+    <div class="g2">
+      <div class="card"><div class="card-title"><span>▸</span> Facturación Semanal</div><div id="semanasContainer"><div class="loading"><div class="spinner"></div></div></div></div>
+      <div class="card"><div class="card-title"><span>▸</span> Canales de Delivery</div><div id="canalesContainer"><div class="loading"><div class="spinner"></div></div></div></div>
+    </div>
+    <div class="sdiv"><div class="sdiv-t">RANKING DE MOZOS</div><div class="sdiv-l"></div></div>
+    <div class="card" style="margin-bottom:14px"><div id="mozosContainer"><div class="loading"><div class="spinner"></div></div></div></div>
+    <div class="sdiv"><div class="sdiv-t">PRODUCTOS & MERMA</div><div class="sdiv-l"></div></div>
+    <div class="g2">
+      <div class="card"><div class="card-title"><span>▸</span> Más vendidos</div><div id="productosContainer"><div class="empty">Sin datos</div></div></div>
+      <div class="card"><div class="card-title"><span>▸</span> Merma</div><div id="mermaContainer"><div class="empty">Sin datos</div></div></div>
+    </div>
+    <div class="sdiv"><div class="sdiv-t">CONSUMO DE CARNES</div><div class="sdiv-l"></div></div>
+    <div class="card" style="margin-bottom:14px"><div id="carnesContainer"><div class="loading"><div class="spinner"></div></div></div></div>
+    <div class="sdiv"><div class="sdiv-t">VINOS — MOVIMIENTO SEMANAL</div><div class="sdiv-l"></div></div>
+    <div class="vino-sem-grid" id="vinosSemanasOps" style="margin-bottom:14px"><div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div></div>
+    <div class="sdiv"><div class="sdiv-t">TOP 5 VINOS MÁS VENDIDOS</div><div class="sdiv-l"></div></div>
+    <div class="card" style="margin-bottom:14px"><div id="vinosTopOps"><div class="loading"><div class="spinner"></div></div></div></div>
+  </div>
+  <!-- PROVEEDORES -->
+  <div class="tab-content" id="tab-prov">
+    <div class="kpi-grid" style="margin-bottom:24px">
+      <div class="kpi-card"><div class="kpi-label">Total Gastado</div><div class="kpi-value" id="provTotal" style="font-size:26px">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Facturas Cargadas</div><div class="kpi-value" id="provCount">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Proveedor Principal</div><div class="kpi-value" id="provTop" style="font-size:20px">—</div></div>
+      <div class="kpi-card"><div class="kpi-label">Prom x Factura</div><div class="kpi-value" id="provProm" style="font-size:26px">—</div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="card-title"><span>▸</span> Gastos por Proveedor</div><div id="gastosContainer"><div class="loading"><div class="spinner"></div></div></div></div>
+      <div class="card"><div class="card-title"><span>▸</span> Últimas Facturas</div><div id="facturasContainer"><div class="loading"><div class="spinner"></div></div></div></div>
+    </div>
+    <div class="sdiv" style="margin-top:24px"><div class="sdiv-t">DETALLE POR PROVEEDOR</div><div class="sdiv-l"></div></div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Proveedor</span>
+        <select id="provSelect" onchange="renderDetalleProveedor()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font-b);font-size:13px;padding:6px 12px;border-radius:6px;cursor:pointer;outline:none;"><option value="">— Seleccioná un proveedor —</option></select>
+      </div>
+      <div id="detalleProvContainer"><div class="empty">Seleccioná un proveedor para ver el detalle</div></div>
+    </div>
+  </div>
+  <!-- STOCK -->
+  <div class="tab-content" id="tab-stock">
+    <div class="sdiv"><div class="sdiv-t">PRODUCTOS ELABORADOS</div><div class="sdiv-l"></div></div>
+    <div class="g2" id="stockCarnes" style="margin-bottom:14px"><div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div></div>
+    <div class="sdiv"><div class="sdiv-t">DEPÓSITO / SECOS</div><div class="sdiv-l"></div></div>
+    <div id="stockGrid" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"><div class="loading"><div class="spinner"></div> Cargando...</div></div>
+    <div class="sdiv"><div class="sdiv-t">VINOS — RESUMEN DEL MES</div><div class="sdiv-l"></div></div>
+    <div class="kpi-grid" id="vinosKpis" style="margin-bottom:14px"><div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Cargando...</div></div>
+    <div class="sdiv"><div class="sdiv-t">DETALLE POR VINO</div><div class="sdiv-l"></div></div>
+    <div class="card"><div id="vinosTablaContainer"><div class="loading"><div class="spinner"></div></div></div></div>
+  </div>
+</main>
+<script>
+const SHEETS_MESES = {
+  'MARZO_2026':      '1-wXk80KrmeYcnpkngbM7EaWl892PIWqBL3WkcWGCYnA',
+  'ABRIL_2026':      '1YwYndkLMPkmCpVPiqZrXc_K6e6iaZzf407tVMIL18ds',
+  'MAYO_2026':       '1miHU6JSwPQaFwU4BqopKKQh-9lzOxds2jhrwaa1DjFk',
+  'JUNIO_2026':      '1MA6GNezhxFWOYqlUoYHQTa2a1Fl4Ayg1zDtOBsOvTOs',
+  'JULIO_2026':      '1zdPInzCti4ybdaJLBtED-pyxCET3a5Z-60AJAsZ2Bzg',
+  'AGOSTO_2026':     '12Ic1dJVHzmk0WrNr1RS3C6JaiG7nGvYAHlnNV9UU7os',
+  'SEPTIEMBRE_2026': '1_wp3SXHE1cMUnIVZKuO4g5niPsCk0MUWYNvhdjuF53E',
+  'OCTUBRE_2026':    '1lxS3xktkdGuXh-q45YRr89EwSxdcF9b-wncAhajfF4s',
+  'NOVIEMBRE_2026':  '1P7a9926EoGuQQNgPFeXIIQUYdK-2fB9HPwAGJ3R4jqc',
+  'DICIEMBRE_2026':  '15FisxNTYO8IFW8zfbufsnDHiq83X9JqbEbmJjD_d0Ko',
+};
+function getSheetOps() { return SHEETS_MESES[document.getElementById('monthSelect').value] || SHEETS_MESES['MAYO_2026']; }
+const SHEET_PROV = '1Ux55KL03zQp2m8UvSMW-x14kYX4FMyWUuIDKBrVyLus';
+const API_KEY = 'AIzaSyB02rsTd-NzUxHFc41Y5JZ5KeJ3YfpZftU';
+let currentTab = 'ops';
+
+// ── Normalización de proveedores ──
+const NORM_PROV = {
+  'amancay b1':                               'Amancay',
+  'amancay b2':                               'Amancay',
+  'amancay delivery':                         'Amancay',
+  'amancay delivery 1':                       'Amancay',
+  'amancay ':                                 'Amancay',
+  'distribuidora moliere s.r.l.':             'Molier',
+  'distribuidora moliere':                    'Molier',
+  'el emporio de lanus s.a.':                 'El Emporio',
+  'el emporio de lanús s.a.':                 'El Emporio',
+  'lustrol argentina s.r.l.':                 'Lustrol',
+  'terracina julian franco':                  'Papelera Julián',
+  'logistica la serenisima sa':               'La Serenísima',
+  'funes fabiana cristina':                   'Helados Eduardo',
+  'bibione s.a.':                             'Nessuno',
+  'bibione s.a. (nessuno supercongelados)':   'Nessuno',
+  'distribuidora blancaluna sa':              'Blanca Luna',
+  'casciaro gustavo miguel y duran jorge oscar sh': 'Casciaro Gustavo Pan Rallado',
+  'italmen sa':                               'Holis Milanesa',
+  'mar de campo':                             'Mar de Campo Mariscos',
+  'la finca - carlos leonardo oreja':         'Verdura',
+  'sipe carnicerías':                         'Sipe Carnes',
+  'breitburd carnes':                         'Breitburd Carnes',
+  'distribuidora kombofrio':                  'Helados Eduardo',
+  'dagamarsu srl':                            'Delitap',
+  'el fundador sabemos hacer helados':        'El Fundador',
+};
+
+function normProv(nombre) {
+  const key = (nombre || '').toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  for (const [patron, norm] of Object.entries(NORM_PROV)) {
+    const pk = patron.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (key === pk || key.includes(pk)) return norm;
+  }
+  return nombre;
+}
+
+function pNum(s) {
+  if (!s && s !== 0) return 0;
+  if (typeof s === 'number') return s;
+  let str = String(s).trim().replace(/\s+/g, '').replace(/\$/g, '');
+  if (str.includes(',')) { str = str.replace(/\./g, '').replace(',', '.'); }
+  else if ((str.match(/\./g) || []).length > 1) { str = str.replace(/\./g, ''); }
+  return parseFloat(str) || 0;
+}
+function fmt(n) {
+  const num = typeof n === 'number' ? n : pNum(n);
+  if (!num) return '—';
+  return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(num);
+}
+function fmtN(n) { return new Intl.NumberFormat('es-AR').format(pNum(n)); }
+
+async function fetchSheet(id, range) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Error');
+  return (await res.json()).values || [];
+}
+
+function getMesLabel() {
+  const mesVal = document.getElementById('monthSelect').value;
+  const partes = mesVal.split('_');
+  const mesesNombre = {ENERO:'enero',FEBRERO:'febrero',MARZO:'marzo',ABRIL:'abril',MAYO:'mayo',
+    JUNIO:'junio',JULIO:'julio',AGOSTO:'agosto',SEPTIEMBRE:'septiembre',OCTUBRE:'octubre',
+    NOVIEMBRE:'noviembre',DICIEMBRE:'diciembre'};
+  return `${mesesNombre[partes[0]] || partes[0].toLowerCase()} ${partes[1]}`;
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+  currentTab = tab;
+  if (tab === 'prov') loadProv();
+  if (tab === 'stock') loadStock();
+}
+
+function reloadCurrent() {
+  if (currentTab === 'ops') loadOps();
+  if (currentTab === 'prov') loadProv();
+  if (currentTab === 'stock') loadStock();
+}
+
+async function loadOps() {
+  document.getElementById('lastUpdate').textContent = 'Actualizando...';
+  try {
+    const rows = await fetchSheet(getSheetOps(), `DASHBOARD!A1:H70`);
+    renderKPIs(rows); renderSemanas(rows); renderCanales(rows); renderMozos(rows); renderProductos(rows);
+  } catch(e) { renderEjemplo(); }
+  await renderCarnes();
+  document.getElementById('lastUpdate').textContent = `${new Date().toLocaleTimeString('es-AR')}`;
+}
+
+function renderKPIs(rows) {
+  const fact=pNum(rows[5]?.[0]), cubs=pNum(rows[5]?.[2]), prom=pNum(rows[5]?.[4]), vs=rows[5]?.[6]||'—';
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">💰 Facturación Total</div><div class="kpi-value">${fact>0?fmt(fact):'—'}</div><div class="kpi-sub">en el mes</div></div>
+    <div class="kpi-card"><div class="kpi-label">👥 Cubiertos Totales</div><div class="kpi-value">${cubs>0?fmtN(cubs):'—'}</div><div class="kpi-sub">en el mes</div></div>
+    <div class="kpi-card"><div class="kpi-label">📊 Promedio x Cubierto</div><div class="kpi-value">${prom>0?fmt(prom):'—'}</div><div class="kpi-sub">por cubierto</div></div>
+    <div class="kpi-card"><div class="kpi-label">📈 VS Mes Anterior</div><div class="kpi-value">${vs}</div><div class="kpi-sub">variación</div></div>`;
+}
+
+function renderSemanas(rows) {
+  const sems=rows.slice(10,15).map(r=>({label:r[0]||'',fact:pNum(r[1]),cubs:pNum(r[2])})).filter(s=>s.label);
+  const max=Math.max(...sems.map(s=>s.fact),1);
+  document.getElementById('semanasContainer').innerHTML=sems.map(s=>`
+    <div class="sem-row">
+      <div class="sem-label">${s.label}</div>
+      <div class="sem-wrap">
+        <div class="sem-track"><div class="sem-fill" style="width:${s.fact/max*100}%"></div></div>
+        <div class="sem-cubs">${s.cubs>0?fmtN(s.cubs)+' cubiertos':'sin datos'}</div>
+      </div>
+      <div class="sem-val">${s.fact>0?fmt(s.fact):'—'}</div>
+    </div>`).join('');
+}
+
+function renderCanales(rows) {
+  const canales=rows.slice(33,37).map(r=>({nombre:r[0]||'',total:pNum(r[3])})).filter(c=>c.nombre);
+  const max=Math.max(...canales.map(c=>c.total),1);
+  const colors=['a','b','g','a'];
+  document.getElementById('canalesContainer').innerHTML=canales.map((c,i)=>`
+    <div class="bar-row">
+      <div class="bar-label">${c.nombre}</div>
+      <div class="bar-track"><div class="bar-fill ${colors[i]}" style="width:${c.total/max*100}%"></div></div>
+      <div class="bar-val">${c.total>0?fmt(c.total):'—'}</div>
+    </div>`).join('');
+}
+
+function renderMozos(rows) {
+  const mozos=rows.slice(18,29).filter(r=>r[5]&&!r[5].includes('ERROR')&&r[5]!=='Mozo')
+    .map(r=>({nombre:r[5]||'',total:pNum(r[6]),cubs:pNum(r[7])})).filter(m=>m.nombre&&m.total>0).sort((a,b)=>b.total-a.total);
+  if (!mozos.length){document.getElementById('mozosContainer').innerHTML='<div class="empty">Sin datos</div>';return;}
+  const max=mozos[0].total; const rks=['g1','g2','g3'];
+  document.getElementById('mozosContainer').innerHTML=mozos.map((m,i)=>`
+    <div class="bar-row" style="margin-bottom:16px">
+      <div style="width:26px;flex-shrink:0"><span class="rn ${rks[i]||''}">${i+1}</span></div>
+      <div style="width:110px;flex-shrink:0">
+        <div class="bar-label cap">${m.nombre.toLowerCase()}</div>
+        <div class="bar-sub">${m.cubs>0?fmtN(m.cubs)+' cub.':''}</div>
+      </div>
+      <div class="bar-track" style="height:9px"><div class="bar-fill a" style="width:${m.total/max*100}%"></div></div>
+      <div class="bar-val">${fmt(m.total)}</div>
+    </div>`).join('');
+}
+
+function renderProductos(rows) {
+  const productos=rows.slice(41,53).filter(r=>r[0]&&r[0]!=='Producto'&&!r[0].includes('VENTA')&&!r[0].includes('MERMA'))
+    .map(r=>({nombre:r[0]||'',unidades:pNum(r[1]),ingresos:pNum(r[2])})).filter(p=>p.nombre&&(p.unidades>0||p.ingresos>0));
+  if (productos.length>0) {
+    const maxU=Math.max(...productos.map(p=>p.unidades),1);
+    document.getElementById('productosContainer').innerHTML=productos.map(p=>`
+      <div class="bar-row">
+        <div class="bar-label">${p.nombre.replace(/🥩|🐟/g,'').trim()}</div>
+        <div class="bar-track"><div class="bar-fill a" style="width:${p.unidades/maxU*100}%"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${fmtN(p.unidades)} u</div>
+      </div>`).join('');
+  }
+  const merma=rows.slice(55,68).filter(r=>r[0]&&!r[0].includes('MERMA')&&!r[0].includes('Producto'))
+    .map(r=>({nombre:r[0]||'',cantidad:pNum(r[1])})).filter(m=>m.nombre&&m.cantidad>0);
+  document.getElementById('mermaContainer').innerHTML='';
+  if (merma.length>0) {
+    const maxM=Math.max(...merma.map(m=>m.cantidad),1);
+    document.getElementById('mermaContainer').innerHTML=merma.map(m=>`
+      <div class="bar-row">
+        <div class="bar-label">${m.nombre.replace(/🥩|🐟/g,'').trim()}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${m.cantidad/maxM*100}%;background:var(--red)"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b);color:var(--red)">${fmtN(m.cantidad)} u</div>
+      </div>`).join('');
+  }
+}
+
+let facturasData = [];
+
+async function loadProv() {
+  document.getElementById('lastUpdate').textContent = 'Actualizando...';
+  try {
+    const rows = await fetchSheet(SHEET_PROV,'Registro Pedidos!A3:L10000');
+    facturasData = rows.filter(r=>r[0]&&r[1]);
+    const mesVal=document.getElementById('monthSelect').value;
+    const partesMes=mesVal.split('_');
+    const mesesMap={ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+    const mesNum=mesesMap[partesMes[0]]||'';
+    const anioCorto=partesMes[1]?partesMes[1].slice(-2):'';
+    const facturasFiltradas=facturasData.filter(r=>{
+      if(!mesNum)return true;
+      const f=r[0]||''; const p=f.split('/');
+      return p.length===3&&p[1]===mesNum&&p[2].slice(-2)===anioCorto;
+    });
+    const porProv={}, facturasUnicas=new Set(), facturasAgrupadas={};
+    facturasFiltradas.forEach(r=>{
+      // Normalizar nombre de proveedor
+      const provRaw = (r[1]||'').trim();
+      const prov = normProv(provRaw).toUpperCase().replace(/\./g,'').replace(/\s+/g,' ').trim();
+      const fecha=r[0]||'';
+      const subtotal=pNum(r[8]||'0'), totalFactura=pNum(r[9]||'0'), totalIva=pNum(r[10]||'0');
+      if(!porProv[prov])porProv[prov]={total:0,count:0};
+      const key=`${fecha}_${prov}`;
+      if(!facturasUnicas.has(key)){
+        facturasUnicas.add(key);
+        porProv[prov].count++;
+        porProv[prov].total+= totalIva>0?totalIva:totalFactura>0?totalFactura:subtotal;
+        facturasAgrupadas[key]={fecha,prov,total:totalFactura,totalIva,subtotalAcum:0,productos:[]};
+      }
+      if(facturasAgrupadas[key]){ facturasAgrupadas[key].subtotalAcum+=subtotal; }
+      if(facturasAgrupadas[key]){ facturasAgrupadas[key].productos.push({producto:r[2]||'',cantidad:r[3]||'',unidad:r[4]||'',precioUnit:r[7]||'',subtotal:r[8]||''}); }
+    });
+    const porProvFinal={};
+    Object.values(facturasAgrupadas).forEach(f=>{
+      if(!porProvFinal[f.prov])porProvFinal[f.prov]={total:0,count:0};
+      porProvFinal[f.prov].total+=f.totalIva>0?f.totalIva:f.subtotalAcum;
+      porProvFinal[f.prov].count++;
+    });
+    const list=Object.entries(porProvFinal).sort((a,b)=>b[1].total-a[1].total);
+    const totalG=list.reduce((s,[,v])=>s+v.total,0);
+    const totalFacturas=facturasUnicas.size;
+    document.getElementById('provTotal').textContent=totalG>0?fmt(totalG):'—';
+    document.getElementById('provCount').textContent=totalFacturas;
+    document.getElementById('provTop').textContent=(list[0]?.[0]||'—').split(' ')[0];
+    document.getElementById('provProm').textContent=totalFacturas>0&&totalG>0?fmt(totalG/totalFacturas):'—';
+    const maxP=list[0]?.[1].total||1;
+    document.getElementById('gastosContainer').innerHTML=list.length>0?list.map(([prov,data])=>`
+      <div class="bar-row">
+        <div class="bar-label">${prov.substring(0,14)}</div>
+        <div class="bar-track"><div class="bar-fill a" style="width:${data.total/maxP*100}%"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${data.total>0?fmt(data.total):data.count+' items'}</div>
+      </div>`).join(''):'<div class="empty">Sin facturas</div>';
+    const hoy=new Date();
+    const fechaHoy=`${hoy.getDate().toString().padStart(2,'0')}/${(hoy.getMonth()+1).toString().padStart(2,'0')}/${hoy.getFullYear()}`;
+    const facturasHoy=Object.values(facturasAgrupadas).filter(f=>f.fecha===fechaHoy);
+    const ultimasFacturas=facturasHoy.length>0?facturasHoy:Object.values(facturasAgrupadas).reverse().slice(0,8);
+    const tituloFacturas=facturasHoy.length>0?`Hoy (${fechaHoy})`:'Últimas facturas';
+    document.getElementById('facturasContainer').innerHTML=`
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">${tituloFacturas}</div>
+      <table class="dt">
+        <thead><tr><th>Proveedor</th><th style="text-align:right">Items</th><th style="text-align:right">Sin IVA</th><th style="text-align:right">Con IVA</th></tr></thead>
+        <tbody>${ultimasFacturas.map(f=>`
+          <tr>
+            <td style="font-size:12px">${f.prov.substring(0,18)}</td>
+            <td class="r" style="font-size:11px;color:var(--muted)">${f.productos.length}</td>
+            <td class="r" style="font-size:11px">${f.totalIva>0?fmt(f.total):fmt(f.subtotalAcum)}</td>
+            <td class="r" style="font-size:11px;color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):'—'}</td>
+          </tr>`).join('')}
+        <tr style="border-top:1px solid var(--border)">
+          <td style="font-size:11px;font-weight:600;padding-top:10px">TOTAL DÍA</td><td></td>
+          <td class="r" style="font-size:11px;font-weight:600;padding-top:10px">${fmt(ultimasFacturas.reduce((s,f)=>s+(f.totalIva>0?f.total:f.subtotalAcum),0))}</td>
+          <td class="r" style="font-size:11px;font-weight:600;padding-top:10px;color:var(--accent)">${fmt(ultimasFacturas.reduce((s,f)=>s+(f.totalIva>0?f.totalIva:0),0)||null)}</td>
+        </tr></tbody>
+      </table>`;
+    const provSelect=document.getElementById('provSelect');
+    const currentVal=provSelect.value;
+    provSelect.innerHTML='<option value="">— Seleccioná un proveedor —</option>';
+    list.forEach(([prov])=>{ const opt=document.createElement('option'); opt.value=prov; opt.textContent=prov; provSelect.appendChild(opt); });
+    if(currentVal) provSelect.value=currentVal;
+    window._facturasAgrupadas=facturasAgrupadas;
+  } catch(e) {
+    document.getElementById('gastosContainer').innerHTML='<div class="empty">Configurar API key de Google</div>';
+    document.getElementById('facturasContainer').innerHTML='<div class="empty">Configurar API key de Google</div>';
+  }
+  document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
+}
+
+function renderDetalleProveedor() {
+  const prov=document.getElementById('provSelect').value;
+  if (!prov){document.getElementById('detalleProvContainer').innerHTML='<div class="empty">Seleccioná un proveedor para ver el detalle</div>';return;}
+  const mesVal=document.getElementById('monthSelect').value;
+  const partes=mesVal.split('_');
+  const mesesMap={ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+  const mesNum=mesesMap[partes[0]]||''; const anio=partes[1]?partes[1].slice(-2):'';
+  const agrupadas=window._facturasAgrupadas||{};
+  const facturasDelProv=Object.values(agrupadas).filter(f=>{
+    if(f.prov!==prov)return false;
+    if(mesNum&&f.fecha){const pf=f.fecha.split('/');if(pf.length===3)return pf[1]===mesNum&&pf[2].slice(-2)===anio;}
+    return true;
+  }).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  if (!facturasDelProv.length){document.getElementById('detalleProvContainer').innerHTML='<div class="empty">Sin facturas para este proveedor</div>';return;}
+  document.getElementById('detalleProvContainer').innerHTML=facturasDelProv.map(f=>`
+    <div style="margin-bottom:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+        <div>
+          <span style="font-size:13px;font-weight:600">${f.fecha}</span>
+          <span style="font-size:11px;color:var(--muted);margin-left:8px">${f.productos.length} productos</span>
+        </div>
+        <div style="display:flex;gap:16px">
+          <span style="font-size:12px;color:var(--muted)">Total: <strong style="color:var(--text)">${f.totalIva>0?fmt(f.total):fmt(f.subtotalAcum)}</strong></span>
+          <span style="font-size:12px;color:var(--muted)">c/IVA: <strong style="color:var(--accent)">${f.totalIva>0?fmt(f.totalIva):'—'}</strong></span>
+        </div>
+      </div>
+      <table class="dt">
+        <thead><tr><th>Producto</th><th style="text-align:right">Cantidad</th><th style="text-align:right">P. Unitario</th><th style="text-align:right">Subtotal</th></tr></thead>
+        <tbody>${f.productos.map(p=>`
+          <tr>
+            <td style="font-size:12px">${p.producto}</td>
+            <td class="r" style="font-size:12px">${p.cantidad} ${p.unidad}</td>
+            <td class="r" style="font-size:12px;color:var(--muted)">${p.precioUnit?fmt(pNum(p.precioUnit)):'—'}</td>
+            <td class="r" style="font-size:12px;color:var(--accent)">${p.subtotal?fmt(pNum(p.subtotal)):'—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`).join('');
+}
+
+// ── COLLAPSIBLE ──
+function toggleSection(id, btn) {
+  const el = document.getElementById(id);
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? 'grid' : 'none';
+  btn.querySelector('.toggle-icon').textContent = isHidden ? '▾' : '▸';
+}
+
+// ── STOCK ──
+async function loadStock() {
+  document.getElementById('lastUpdate').textContent='Actualizando...';
+  try {
+    let stockRows=null;
+    for (let sem=5;sem>=1;sem--) {
+      try {
+        const r=await fetchSheet(getSheetOps(),`SEMANA ${sem}!A1:H195`);
+        const tieneDatos=r.some(row=>row[0]==='TOTAL'&&row.slice(1).some(v=>parseFloat(v)>0));
+        if (tieneDatos){stockRows=r;break;}
+      } catch(e){continue;}
+    }
+    if (!stockRows) throw new Error('Sin datos');
+    const productoStock={};
+    const productoNames=[
+      'OJO','LOMO','BONDIOLA','SALMON','MATAMBRE',
+      'MILA CARTA','MILA MENU','MILA GROSA','SUPREMA',
+      'CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ',
+      'RAVIOL VERDE','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS',
+      'RAVIOL OSOBUCO','CANELONES VERDURA','CANELON CARNE'
+    ];
+    productoNames.forEach(nombre=>{
+      for (let i=0;i<stockRows.length;i++){
+        if (stockRows[i][0]&&stockRows[i][0].trim()===nombre){
+          for (let j=i+1;j<Math.min(i+10,stockRows.length);j++){
+            if (stockRows[j][0]==='TOTAL'){
+              const vals=stockRows[j].slice(1,8).filter(v=>v!==''&&v!==undefined&&parseFloat(v)>0);
+              productoStock[nombre]=vals.length>0?parseFloat(vals[vals.length-1]):0; break;
+            }
+          }
+          break;
+        }
+      }
+    });
+    const carnes=['OJO','LOMO','BONDIOLA','MATAMBRE'];
+    const milanesas=['MILA CARTA','MILA MENU','MILA GROSA','SUPREMA'];
+    const otros=['SALMON','CHURRASQUITO CERDO','EMPANADAS DE CARNE','EMPANADAS DE JyQ'];
+    const pastas=['RAVIOL VERDE','TAGLIATELLE','SORRENTINO','FUSIL','ÑOQUIS','RAVIOL OSOBUCO','CANELONES VERDURA','CANELON CARNE'];
+    const renderGrupo=(titulo,lista,unidad='u')=>`
+      <div class="card">
+        <div class="card-title"><span>▸</span> ${titulo}</div>
+        ${lista.map(p=>{const stock=productoStock[p]||0;const low=stock<10;return `<div class="stock-item"><div class="dot ${low?'low':'ok'}"></div><div class="stock-name">${p}</div><div class="stock-val">${stock} ${unidad}</div></div>`;}).join('')}
+      </div>`;
+    document.getElementById('stockCarnes').innerHTML=
+      renderGrupo('Carnes',carnes)+renderGrupo('Milanesas',milanesas)+
+      renderGrupo('Otros',otros)+renderGrupo('🍝 Pastas',pastas,'porc');
+  } catch(e){renderStockEjemplo();}
+
+  try {
+    const rows=await fetchSheet(SHEET_PROV,'Stock!A2:G500');
+    const items=rows.filter(r=>r[0]);
+    const categoriaMap=[
+      {cat:'🧺 Almacén',keys:['emporio','blancaluna','dagamarsu']},
+      {cat:'🧀 Fiambres y Lácteos',keys:['molier','moliere','provoleta','serenisima']},
+      {cat:'🍦 Helados',keys:['helados','eduardo','funes','kombofrio']},
+      {cat:'🍟 Congelados',keys:['nessuno','bibione']},
+      {cat:'🧹 Limpieza',keys:['lustrol']},
+      {cat:'📦 Papelería y Descartables',keys:['julian','papelera','terracina']},
+    ];
+    function getCategoria(proveedor){
+      const norm=(proveedor||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      for (const {cat,keys} of categoriaMap){if(keys.some(k=>norm.includes(k)))return cat;}
+      return null;
+    }
+    const porCategoria={};
+    items.forEach(r=>{
+      const cat=getCategoria(r[1]);
+      if(!cat)return;
+      if(!porCategoria[cat])porCategoria[cat]=[];
+      porCategoria[cat].push({producto:r[0],unidad:r[2]||'',actual:parseFloat(r[3])||0,minimo:parseFloat(r[4])||0});
+    });
+    document.getElementById('stockGrid').innerHTML=Object.entries(porCategoria).map(([cat,items],idx)=>{
+      const id=`sec-secos-${idx}`;
+      return `<div class="card" style="padding:0;overflow:hidden;">
+        <div onclick="toggleSection('${id}',this)" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--text);">${cat}</div>
+          <span class="toggle-icon" style="font-size:16px;color:var(--accent);">▸</span>
+        </div>
+        <div id="${id}" style="display:none;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0;padding:8px 12px;">
+          ${items.map(item=>`<div class="stock-item"><div class="dot ${item.actual<=item.minimo?'low':'ok'}"></div><div class="stock-name">${item.producto}</div><div class="stock-val">${item.actual} ${item.unidad}</div></div>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){document.getElementById('stockGrid').innerHTML='<div class="empty">Sin datos de secos</div>';}
+
+  try {
+    const mesLabel = getMesLabel();
+    const rows = await fetchSheet(SHEET_PROV, 'MOVIMIENTOS VINOS!A3:AA500');
+    const vinosMes = rows.filter(r => r[1] && r[1].toLowerCase().trim() === mesLabel.toLowerCase().trim());
+    if (vinosMes.length === 0) {
+      const sinDatos = '<div class="empty">Sin datos para este mes</div>';
+      document.getElementById('vinosKpis').innerHTML = `<div class="empty" style="grid-column:1/-1">Sin datos de vinos para ${mesLabel}</div>`;
+      document.getElementById('vinosTopOps').innerHTML = sinDatos;
+      document.getElementById('vinosTablaContainer').innerHTML = sinDatos;
+      const opsEl = document.getElementById('vinosSemanasOps');
+      if (opsEl) opsEl.innerHTML = sinDatos;
+      return;
+    }
+    const n = v => parseFloat(v) || 0;
+    const totIng   = vinosMes.reduce((s,r) => s + n(r[23]), 0);
+    const totVen   = vinosMes.reduce((s,r) => s + n(r[24]), 0);
+    const totMerma = vinosMes.reduce((s,r) => s + n(r[25]), 0);
+    const stkFinal = vinosMes.reduce((s,r) => s + n(r[26]), 0);
+    document.getElementById('vinosKpis').innerHTML = `
+      <div class="kpi-card"><div class="kpi-label">📦 Ingresos del Mes</div><div class="kpi-value">${Math.round(totIng)}</div><div class="kpi-sub">botellas ingresadas</div></div>
+      <div class="kpi-card"><div class="kpi-label">🍷 Ventas del Mes</div><div class="kpi-value">${Math.round(totVen)}</div><div class="kpi-sub">botellas vendidas</div></div>
+      <div class="kpi-card"><div class="kpi-label">📊 Stock Actual</div><div class="kpi-value">${Math.round(stkFinal)}</div><div class="kpi-sub">botellas en depósito</div></div>
+      <div class="kpi-card"><div class="kpi-label">⚠️ Merma Total</div><div class="kpi-value" style="color:${totMerma>0?'var(--red)':'var(--green)'}">${Math.round(totMerma)}</div><div class="kpi-sub">botellas sin explicación</div></div>`;
+    const sems = [
+      {label:'Sem 1', ing:3,  ven:4,  merma:5,  stk:6},
+      {label:'Sem 2', ing:7,  ven:8,  merma:9,  stk:10},
+      {label:'Sem 3', ing:11, ven:12, merma:13, stk:14},
+      {label:'Sem 4', ing:15, ven:16, merma:17, stk:18},
+      {label:'Sem 5', ing:19, ven:20, merma:21, stk:22},
+    ];
+    const semHtml = sems.map(s => {
+      const ing   = vinosMes.reduce((sum,r) => sum + n(r[s.ing]),   0);
+      const ven   = vinosMes.reduce((sum,r) => sum + n(r[s.ven]),   0);
+      const merma = vinosMes.reduce((sum,r) => sum + n(r[s.merma]), 0);
+      const stk   = vinosMes.reduce((sum,r) => sum + n(r[s.stk]),   0);
+      return `<div class="vino-sem-card">
+        <div class="vino-sem-titulo">${s.label}</div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Ingreso</span><span class="vino-sem-val ing">${Math.round(ing)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Venta</span><span class="vino-sem-val ven">${Math.round(ven)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Merma</span><span class="vino-sem-val" style="color:${merma>0?'var(--red)':'var(--muted)'}">${Math.round(merma)}</span></div>
+        <div class="vino-sem-fila"><span class="vino-sem-label">Stock</span><span class="vino-sem-val stk">${Math.round(stk)}</span></div>
+      </div>`;
+    }).join('');
+    const opsEl = document.getElementById('vinosSemanasOps');
+    if (opsEl) opsEl.innerHTML = semHtml;
+    const ranking = vinosMes.map(r => ({nombre: r[0]||'', ventas: n(r[24])}))
+      .filter(v => v.ventas > 0).sort((a,b) => b.ventas - a.ventas).slice(0,5);
+    const topEl = document.getElementById('vinosTopOps');
+    if (topEl) {
+      topEl.innerHTML = ranking.length > 0
+        ? ranking.map((v,i) => {
+            const maxV = ranking[0].ventas;
+            const rks = ['g1','g2','g3'];
+            return `<div class="bar-row">
+              <div style="width:22px;flex-shrink:0"><span class="rn ${rks[i]||''}">${i+1}</span></div>
+              <div class="bar-label" style="width:200px">${v.nombre}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${v.ventas/maxV*100}%;background:#9b59b6"></div></div>
+              <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${Math.round(v.ventas)} bot</div>
+            </div>`;
+          }).join('')
+        : '<div class="empty">Sin ventas registradas aún</div>';
+    }
+    const filas = vinosMes.map(r => {
+      const prod=r[0]||'', stkIni=n(r[2]), totI=n(r[23]), totV=n(r[24]), totM=n(r[25]), stkF=n(r[26]);
+      const estado = totM>0 ? `<span class="badge-warn">⚠ Revisar</span>` : `<span class="badge-ok">✓ OK</span>`;
+      return `<tr>
+        <td style="font-size:12px">${prod}</td>
+        <td class="r" style="font-size:12px;color:var(--muted)">${Math.round(stkIni)}</td>
+        <td class="r" style="font-size:12px;color:var(--blue)">${Math.round(totI)}</td>
+        <td class="r" style="font-size:12px;color:var(--accent)">${Math.round(totV)}</td>
+        <td class="r" style="font-size:12px;color:var(--green)">${Math.round(stkF)}</td>
+        <td class="r" style="font-size:12px;color:${totM>0?'var(--red)':'var(--muted)'}">${Math.round(totM)}</td>
+        <td class="r">${estado}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('vinosTablaContainer').innerHTML = `
+      <table class="dt">
+        <thead><tr>
+          <th style="width:30%">Vino</th><th style="text-align:right">Stk Ini</th>
+          <th style="text-align:right">Ingresos</th><th style="text-align:right">Ventas</th>
+          <th style="text-align:right">Stock</th><th style="text-align:right">Merma</th>
+          <th style="text-align:right">Estado</th>
+        </tr></thead>
+        <tbody>${filas}</tbody>
+      </table>`;
+  } catch(e) {
+    document.getElementById('vinosKpis').innerHTML = `<div class="empty" style="grid-column:1/-1">Error cargando datos de vinos</div>`;
+    document.getElementById('vinosTablaContainer').innerHTML = '<div class="empty">Error cargando datos de vinos</div>';
+  }
+  document.getElementById('lastUpdate').textContent=`${new Date().toLocaleTimeString('es-AR')}`;
+}
+
+async function renderCarnes() {
+  try {
+    const mesVal = document.getElementById('monthSelect').value;
+    const partesMes = mesVal.split('_');
+    const mesesMap = {ENERO:'01',FEBRERO:'02',MARZO:'03',ABRIL:'04',MAYO:'05',JUNIO:'06',
+      JULIO:'07',AGOSTO:'08',SEPTIEMBRE:'09',OCTUBRE:'10',NOVIEMBRE:'11',DICIEMBRE:'12'};
+    const mesNum = mesesMap[partesMes[0]] || '';
+    const anioCorto = partesMes[1] ? partesMes[1].slice(-2) : '';
+    const rows = await fetchSheet(SHEET_PROV, 'Registro Pedidos!A3:L10000');
+    const provCarnes = ['sipe','amancay','jonathan','breitburd'];
+    const filas = rows.filter(r => {
+      if (!r[0] || !r[1]) return false;
+      const f = r[0].split('/');
+      if (f.length !== 3 || f[1] !== mesNum || f[2].slice(-2) !== anioCorto) return false;
+      const prov = (r[1] || '').toLowerCase();
+      return provCarnes.some(p => prov.includes(p));
+    });
+    const cortes = [
+      { nombre: 'Ojo de bife',        keys: ['ojo'],          kg: 0 },
+      { nombre: 'Lomo',               keys: ['lomo'],         kg: 0 },
+      { nombre: 'Bondiola',           keys: ['bondiola'],     kg: 0 },
+      { nombre: 'Picada',             keys: ['picada'],       kg: 0 },
+      { nombre: 'Paleta',             keys: ['paleta'],       kg: 0 },
+      { nombre: 'Mollejas',           keys: ['molleja'],      kg: 0 },
+      { nombre: 'Churrasquito cerdo', keys: ['churrasquito'], kg: 0 },
+      { nombre: 'Pata muslo',         keys: ['pata muslo','pata'], kg: 0, esCaja: true },
+      { nombre: 'Pechuga / Suprema',  keys: ['pechuga','suprema'], kg: 0, esCaja: true },
+    ];
+    filas.forEach(r => {
+      const producto = (r[2] || '').toLowerCase();
+      const cantidad = parseFloat(r[3]) || (r[3] === '' || r[3] === undefined ? 1 : 0);
+      const unidad   = (r[4] || '').toLowerCase();
+      cortes.forEach(c => {
+        if (c.keys.some(k => producto.includes(k))) {
+          if (c.esCaja) {
+            c.kg += (unidad.includes('unidad') || unidad.includes('caja') || unidad === '' || unidad.includes('kg')) ? cantidad * 15 : cantidad;
+          } else {
+            c.kg += cantidad;
+          }
+        }
+      });
+    });
+    const cortesConDatos = cortes.filter(c => c.kg > 0);
+    if (cortesConDatos.length === 0) {
+      document.getElementById('carnesContainer').innerHTML = '<div class="empty">Sin datos de carnes para este mes</div>';
+      return;
+    }
+    const maxKg = Math.max(...cortesConDatos.map(c => c.kg));
+    document.getElementById('carnesContainer').innerHTML = cortesConDatos.map(c => `
+      <div class="bar-row">
+        <div class="bar-label" style="width:160px">${c.nombre}</div>
+        <div class="bar-track"><div class="bar-fill a" style="width:${c.kg/maxKg*100}%"></div></div>
+        <div class="bar-val" style="font-size:13px;font-family:var(--font-b)">${c.kg.toFixed(1)} kg</div>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('carnesContainer').innerHTML = '<div class="empty">Sin datos de carnes</div>';
+  }
+}
+
+function renderEjemplo() {
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi-card"><div class="kpi-label">💰 Facturación Total</div><div class="kpi-value">$59,5M</div><div class="kpi-sub">Marzo 2026</div></div>
+    <div class="kpi-card"><div class="kpi-label">👥 Cubiertos Totales</div><div class="kpi-value">1.864</div><div class="kpi-sub">en el mes</div></div>
+    <div class="kpi-card"><div class="kpi-label">📊 Promedio x Cubierto</div><div class="kpi-value">$26.3K</div><div class="kpi-sub">por cubierto</div></div>
+    <div class="kpi-card"><div class="kpi-label">📈 VS Febrero</div><div class="kpi-value">—</div></div>`;
+}
+function renderStockEjemplo() {
+  document.getElementById('stockCarnes').innerHTML=`<div class="card" style="grid-column:1/-1"><div class="empty">Sin datos de productos elaborados</div></div>`;
+}
+
+loadOps();
+</script>
+<button id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="display:none;position:fixed;bottom:28px;right:28px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--muted);font-size:18px;font-weight:700;width:44px;height:44px;border-radius:50%;cursor:pointer;z-index:999;backdrop-filter:blur(4px);">↑</button>
+<script>
+  const topBtn=document.getElementById('topBtn');
+  window.addEventListener('scroll',()=>{ topBtn.style.display=window.scrollY>300?'block':'none'; });
+</script>
+</body>
+</html>
+ame="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bodegón Nuñez — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #111113;
+    --surface: #18181b;
+    --surface2: #222226;
+    --border: #2e2e33;
+    --accent: #d4a85a;
+    --red: #e05252;
+    --green: #4db87a;
+    --blue: #5b9bd5;
+    --text: #f2efe9;
+    --muted: #7a7a85;
+    --font-d: 'Bebas Neue', sans-serif;
+    --font-b: 'DM Sans', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-b); }
 
   .header {
     background: var(--surface);
